@@ -1,0 +1,152 @@
+site_name: Oduflow Platform
+site_url: https://docs.oduflow.sh
+site_description: Guides for the Oduflow hosting platform, client environments, and infrastructure
+site_author: Oduist
+copyright: Copyright &copy; Oduist — Oduflow
+repo_url: https://github.com/oduflow/oduflow-platform-docs
+repo_name: oduflow/oduflow-platform-docs
+
+theme:
+  name: material
+  logo: assets/logo.png
+  favicon: assets/favicon.ico
+  icon:
+    repo: fontawesome/brands/github
+  font:
+    text: Inter
+    code: JetBrains Mono
+  palette:
+    # Dark mode is the default (matches docs.oduist.com)
+    - scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
+    - scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+  features:
+    - navigation.instant
+    - navigation.instant.progress
+    - navigation.tracking
+    - navigation.sections
+    - navigation.top
+    - navigation.footer
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+
+plugins:
+  - search
+  - glightbox
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - def_list
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+  - pymdownx.details
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - toc:
+      permalink: true
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/oduflow/oduflow-platform-docs
+      name: Oduflow on GitHub
+    - icon: fontawesome/solid/globe
+      link: https://docs.oduflow.sh
+      name: Oduflow Docs
+
+extra_css:
+  - css/custom.css
+
+validation:
+  nav:
+    omitted_files: warn
+  links:
+    not_found: warn
+    anchors: warn
+    unrecognized_links: warn
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Platform Overview: spec.md
+      - Visitor and Integrator Guide: integrator-guide.md
+      - Partner Access: partner-access.md
+      - Customer Configuration: customer-configuration.md
+      - Access Roles: access-control.md
+      - Repository Access: github-download-access.md
+  - Client Environments:
+      - Service Lifecycle: client-lifecycle.md
+      - Production Bootstrap: client-production.md
+      - Applications: client-apps.md
+      - Credentials and Access: client-access.md
+      - Coding Agent: client-agent.md
+      - IDE Installation: ide-installation.md
+      - Backup and Restore: client-backup.md
+      - Capacity: client-capacity.md
+      - Software Releases: client-releases.md
+      - Debugging: client-debugging.md
+  - Control Plane:
+      - Settings and Secrets: control-settings.md
+      - Dashboard and IDE: control-ide.md
+      - Queues and Notifications: queue-and-notifications.md
+      - Deployment Recovery: deployment-recovery-ui.md
+      - Billing Setup: billing-operations.md
+      - Billing Architecture: billing-architecture.md
+      - Odoo Experience: odoo-experience.md
+  - Infrastructure:
+      - Platform Stack: container-services.md
+      - Master Automation: master-automation.md
+      - Control Services: control-master.md
+      - Salt Master: salt-master.md
+      - Salt Minion and Storage: salt-minion.md
+      - Asynchronous Configuration: salt-async-apply.md
+      - Salt Job Diagnostics: salt-job-diagnostics.md
+      - Salt Result Recovery: salt-result-recovery.md
+      - Pillar Preview: client-pillar-preview.md
+      - Custom Salt States: custom-salt-states.md
+      - Administrative SSH: administrative-ssh.md
+      - DNS and Certificates: cloudflare.md
+      - TLS Proxy: traefik.md
+      - Headscale: headscale.md
+      - Private Network Management: headscale-management.md
+      - Managed LiteLLM: litellm-managed.md
+      - LiteLLM over VPN: litellm-vpn.md
+      - Vultr Plans: vultr-server-plans.md
+      - Vultr SSH Keys: vultr-ssh-keys.md
+      - Infrastructure Images: infrastructure-images.md
+      - Golden Images: golden-image.md
+  - Project Reference:
+      - Documentation Site: documentation-site.md
+      - Namespace Migration: brand-migration.md
+      - Android Booth Assistant Specification: odoo-experience-android-prompt.md
+      - Architecture Decisions:
+          - Provisioning Foundation: decisions/0001-provisioning-foundation.md
+          - Provider Dispatch: decisions/0002-provider-dispatch.md
+          - Salt Configuration Authority: decisions/0003-salt-first-debugging.md
+          - Native Services and OCI: decisions/0004-native-services-and-oci.md

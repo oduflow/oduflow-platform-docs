@@ -1,0 +1,16 @@
+{
+  "source_commit": "9879b273f272ee89bf9c8e6eba525b933f1587b0",
+  "control_commit": "9879b273f272ee89bf9c8e6eba525b933f1587b0",
+  "workflow_run": "https://github.com/oduflow/oduflow-platform/actions/runs/34721285565",
+  "platform": "linux/amd64",
+  "tag": "sha-9879b273f272ee89bf9c8e6eba525b933f1587b0-run-34721285565-1",
+  "base_images": {
+    "ubuntu": "ubuntu@sha256:224a1869083a311ef3f13648a154ba79832fbef6364d31493642ca03082da254",
+    "python": "python@sha256:782412e85d0f0984994c290652577d4018aff08145c85b262bb63dc0c7522254"
+  },
+  "images": {
+    "master": "ghcr.io/oduflow/oduflow-platform/master@sha256:1517e66a2bbb5a0972e908168e1b68a092eab616e9a1576bc568ffc9f98e731e",
+    "litellm": "ghcr.io/oduflow/oduflow-platform/litellm@sha256:25c0f812a7a5faf61472ed700ccc92eb2098203c3109b90f1e73230135b246f7",
+    "vpn": "ghcr.io/oduflow/oduflow-platform/vpn@sha256:c55fb73f1616c93935ddd7c7513ad12d034a3bcb70be76abeb6e85efb3078e44"
+  }
+}
