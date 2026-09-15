@@ -3,15 +3,11 @@ site_url: https://docs.oduflow.sh
 site_description: Guides for the Oduflow hosting platform, client environments, and infrastructure
 site_author: Oduist
 copyright: Copyright &copy; Oduist — Oduflow
-repo_url: https://github.com/oduflow/oduflow-platform-docs
-repo_name: oduflow/oduflow-platform-docs
 
 theme:
   name: material
   logo: assets/logo.png
   favicon: assets/favicon.ico
-  icon:
-    repo: fontawesome/brands/github
   font:
     text: Inter
     code: JetBrains Mono
@@ -73,9 +69,6 @@ markdown_extensions:
 
 extra:
   social:
-    - icon: fontawesome/brands/github
-      link: https://github.com/oduflow/oduflow-platform-docs
-      name: Oduflow on GitHub
     - icon: fontawesome/solid/globe
       link: https://docs.oduflow.sh
       name: Oduflow Docs

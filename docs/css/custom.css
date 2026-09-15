@@ -343,3 +343,207 @@ h4:hover .headerlink, h5:hover .headerlink, h6:hover .headerlink { opacity: 1; }
 @media screen and (max-width: 44.9em) {
   .odu-hero { padding: 3rem 1rem 2.5rem; margin: -1rem -.6rem 2rem; }
 }
+
+/* Platform architecture: semantic cards with decorative connection paths. */
+.odu-architecture {
+  --map-control: #639aff;
+  --map-network: #31c7b4;
+  --map-ai: #b598ff;
+  padding: clamp(1rem, 3vw, 2rem);
+  margin: 1rem 0 3rem;
+  border: 1px solid var(--odu-border-strong);
+  border-radius: 1.2rem;
+  background: var(--odu-surface);
+}
+[data-md-color-scheme="default"] .odu-architecture {
+  --map-control: #245fc7;
+  --map-network: #087f72;
+  --map-ai: #7347be;
+}
+.odu-architecture__eyebrow,
+.odu-map__category {
+  display: block;
+  font-family: var(--md-code-font-family);
+  font-size: .58rem;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.odu-architecture__eyebrow { color: var(--map-control); }
+.md-typeset .odu-architecture__heading h2 {
+  margin: .55rem 0 .6rem;
+  padding: 0;
+  border: 0;
+  font-size: clamp(1.35rem, 2.6vw, 1.8rem);
+  line-height: 1.25;
+  letter-spacing: -.035em;
+}
+.odu-architecture__heading > p {
+  max-width: 42rem;
+  margin: 0 0 1.8rem;
+  color: var(--md-default-fg-color--light);
+  font-size: .78rem;
+}
+.odu-map {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: 164px 66px 172px 66px auto;
+  column-gap: 24px;
+}
+.odu-map__connections {
+  position: absolute;
+  inset: 0 0 auto;
+  width: 100%;
+  height: 468px;
+  overflow: visible;
+  pointer-events: none;
+}
+.odu-map__connections path {
+  fill: none;
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+.odu-map__line--control, .odu-map__arrow--control { stroke: var(--map-control); }
+.odu-map__line--network, .odu-map__arrow--network { stroke: var(--map-network); }
+.odu-map__line--network { stroke-dasharray: 5 5; }
+.odu-map__line--ai, .odu-map__arrow--ai { stroke: var(--map-ai); }
+.md-typeset .odu-map__node {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 20px;
+  color: var(--md-default-fg-color);
+  background: var(--md-default-bg-color);
+  border: 1px solid var(--odu-border-strong);
+  border-top: 2px solid var(--node-accent, var(--map-control));
+  border-radius: .7rem;
+  transition: border-color .2s, box-shadow .2s;
+}
+.md-typeset .odu-map__node:hover,
+.md-typeset .odu-map__node:focus-visible {
+  border-color: var(--node-accent, var(--map-control));
+  box-shadow: 0 0 0 3px var(--odu-border), 0 .4rem 1.2rem rgba(0, 0, 0, .12);
+}
+.odu-map__node--control { grid-area: 1 / 2; }
+.odu-map__node--headscale { grid-area: 3 / 1; --node-accent: var(--map-network); }
+.odu-map__node--salt { grid-area: 3 / 2; }
+.odu-map__node--litellm { grid-area: 3 / 3; --node-accent: var(--map-ai); }
+.odu-map__category { color: var(--node-accent, var(--map-control)); }
+.md-typeset .odu-map h3 {
+  margin: 7px 0 6px;
+  font-size: 1.02rem;
+  line-height: 1.25;
+  letter-spacing: -.02em;
+}
+.odu-map__node h3 > span { color: var(--map-control); }
+.md-typeset .odu-map__node p {
+  margin: 0;
+  font-size: .65rem;
+  line-height: 1.5;
+  color: var(--md-default-fg-color--light);
+}
+.odu-map__more {
+  display: flex;
+  justify-content: space-between;
+  gap: .4rem;
+  margin-top: auto;
+  padding-top: 8px;
+  font-size: .57rem;
+  color: var(--node-accent, var(--map-control));
+}
+.odu-map__edge {
+  z-index: 1;
+  place-self: center;
+  padding: 3px 7px;
+  background: var(--odu-surface);
+  font-size: .57rem;
+  font-weight: 500;
+  line-height: 1.35;
+  text-align: center;
+  color: var(--map-control);
+}
+.odu-map__edge--enrollment { grid-area: 2 / 1; }
+.odu-map__edge--dispatch { grid-area: 2 / 2; }
+.odu-map__edge--budgets { grid-area: 2 / 3; }
+.odu-map__edge--network { grid-area: 4 / 1; color: var(--map-network); }
+.odu-map__edge--configuration { grid-area: 4 / 2; }
+.odu-map__edge--inference { grid-area: 4 / 3; color: var(--map-ai); }
+.odu-map__clients {
+  position: relative;
+  grid-area: 5 / 1 / 6 / 4;
+  padding: 20px;
+  border: 1px solid var(--odu-border-strong);
+  border-radius: .8rem;
+  background: var(--md-default-bg-color);
+}
+.odu-map__clients-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 16px;
+}
+.md-typeset .odu-map__clients-heading h3 a { color: var(--md-default-fg-color); }
+.odu-map__clients-heading h3 span { font-size: .7rem; color: var(--map-control); }
+.odu-map__isolation {
+  padding: 6px 10px;
+  border: 1px solid var(--odu-border-strong);
+  border-radius: 2rem;
+  color: var(--md-default-fg-color--light);
+  font-size: .58rem;
+}
+.odu-map__instances { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.odu-map__instance {
+  padding: 14px;
+  border: 1px dashed var(--odu-border-strong);
+  border-radius: .6rem;
+  background: var(--odu-surface);
+}
+.odu-map__instance-heading { display: flex; justify-content: space-between; gap: .5rem; margin-bottom: 10px; }
+.odu-map__instance-heading strong { font-size: .68rem; }
+.odu-map__instance-heading > span { font-size: .55rem; color: var(--md-default-fg-color--light); }
+.odu-map__production {
+  padding: 10px 12px;
+  background: var(--md-accent-fg-color--transparent);
+  border: 1px solid var(--odu-brand-glow);
+  border-radius: .35rem;
+  color: var(--map-control);
+  font-size: .7rem;
+  font-weight: 600;
+}
+.odu-map__production > span { display: block; margin-top: 2px; font-size: .55rem; font-weight: 400; color: var(--md-default-fg-color--light); }
+.odu-map__runtime { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+.odu-map__runtime > span { padding: 8px 10px; border: 1px solid var(--odu-border); border-radius: .35rem; font-size: .65rem; }
+.odu-map__runtime small { display: block; margin-top: 2px; font-size: .52rem; color: var(--md-default-fg-color--light); }
+.odu-map__foundation { display: flex; flex-wrap: wrap; gap: 6px 12px; padding-top: 10px; font-size: .55rem; color: var(--md-default-fg-color--light); }
+.odu-map__foundation span::before { content: ""; display: inline-block; width: 4px; height: 4px; margin: 0 5px 2px 0; border-radius: 50%; background: var(--map-network); }
+.md-typeset .odu-map__clients-caption { margin: 14px 0 0; font-size: .6rem; color: var(--md-default-fg-color--light); }
+.odu-map__legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 22px; margin: 20px 0; font-size: .57rem; color: var(--md-default-fg-color--light); }
+.odu-map__legend > span { display: inline-flex; align-items: center; gap: 7px; }
+.odu-map__key { width: 17px; border-top: 2px solid var(--map-control); }
+.odu-map__key--network { border-color: var(--map-network); border-top-style: dashed; }
+.odu-map__key--ai { border-color: var(--map-ai); }
+.odu-map__notes { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; border-top: 1px solid var(--odu-border); padding-top: 16px; }
+.md-typeset .odu-map__notes p { margin: 0; font-size: .64rem; line-height: 1.65; color: var(--md-default-fg-color--light); }
+.odu-map__notes strong { display: block; margin-bottom: 4px; color: var(--md-default-fg-color); font-weight: 600; }
+
+@media screen and (max-width: 1000px) {
+  .odu-map { display: flex; flex-direction: column; gap: 12px; }
+  .odu-map__connections, .odu-map__edge { display: none; }
+  .md-typeset .odu-map__node { min-height: 140px; padding: 18px; }
+  .odu-map__node--control { order: 0; }
+  .odu-map__node--salt { order: 2; }
+  .odu-map__node--headscale { order: 1; }
+  .odu-map__node--litellm { order: 3; }
+  .odu-map__clients { order: 4; padding: 16px; }
+  .odu-map__clients-heading { align-items: flex-start; flex-direction: column; gap: 6px; }
+  .odu-map__instances, .odu-map__notes { grid-template-columns: 1fr; }
+  .odu-map__instance-heading { flex-wrap: wrap; }
+  .odu-map__node--control::after { content: "↓ Dispatch jobs to Salt · Manage network & AI access"; }
+  .odu-map__node--salt::after { content: "↓ Configure & update client instances"; }
+  .odu-map__node--headscale::after { content: "↓ Coordinate the private Tailscale network"; }
+  .odu-map__node--litellm::after { content: "↑ AI requests from client instances"; }
+  .odu-map__node::after { padding-top: 12px; margin-top: 12px; border-top: 1px solid var(--odu-border); font-size: .58rem; color: var(--node-accent, var(--map-control)); }
+}
