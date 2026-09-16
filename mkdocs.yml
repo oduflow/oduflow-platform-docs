@@ -86,55 +86,63 @@ validation:
 
 nav:
   - Home: index.md
-  - Getting Started:
-      - Platform Overview: spec.md
-      - Visitor and Integrator Guide: integrator-guide.md
+  - Start Here:
+      - Find Your Guide: start-here.md
+      - Architecture: spec.md
+      - Components and Terminology: glossary.md
+  - Customers and Partners:
+      - Visitor and Integrator Manual: integrator-guide.md
       - Partner Access: partner-access.md
       - Customer Configuration: customer-configuration.md
-      - Access Roles: access-control.md
+      - Passwords and Access: client-access.md
       - Repository Access: github-download-access.md
-  - Client Environments:
-      - Service Lifecycle: client-lifecycle.md
-      - Production Bootstrap: client-production.md
-      - Applications: client-apps.md
-      - Credentials and Access: client-access.md
-      - Coding Agent: client-agent.md
+  - Client Operations:
+      - Deploy and Troubleshoot: client-debugging.md
+      - Software Releases: client-releases.md
+      - Application Installation: client-apps.md
       - IDE Installation: ide-installation.md
+      - Coding Agent: client-agent.md
+      - Production Bootstrap: client-production.md
+      - Service Lifecycle: client-lifecycle.md
       - Backup and Restore: client-backup.md
       - Capacity: client-capacity.md
-      - Software Releases: client-releases.md
-      - Debugging: client-debugging.md
+      - Deployment Recovery: deployment-recovery-ui.md
   - Control Plane:
       - Settings and Secrets: control-settings.md
-      - Dashboard and IDE: control-ide.md
+      - Access Roles: access-control.md
+      - Dashboard and Shared IDE: control-ide.md
       - Queues and Notifications: queue-and-notifications.md
-      - Deployment Recovery: deployment-recovery-ui.md
+      - Odoo Experience: odoo-experience.md
+  - AI and Billing:
+      - Managed LiteLLM: litellm-managed.md
+      - LiteLLM over VPN: litellm-vpn.md
       - Billing Setup: billing-operations.md
       - Billing Architecture: billing-architecture.md
-      - Odoo Experience: odoo-experience.md
   - Infrastructure:
       - Platform Stack: container-services.md
       - Master Automation: master-automation.md
-      - Control Services: control-master.md
-      - Salt Master: salt-master.md
-      - Salt Minion and Storage: salt-minion.md
-      - Asynchronous Configuration: salt-async-apply.md
-      - Salt Job Diagnostics: salt-job-diagnostics.md
-      - Salt Result Recovery: salt-result-recovery.md
-      - Pillar Preview: client-pillar-preview.md
-      - Custom Salt States: custom-salt-states.md
-      - Administrative SSH: administrative-ssh.md
-      - DNS and Certificates: cloudflare.md
-      - TLS Proxy: traefik.md
-      - Headscale: headscale.md
-      - Private Network Management: headscale-management.md
-      - Managed LiteLLM: litellm-managed.md
-      - LiteLLM over VPN: litellm-vpn.md
-      - Vultr Plans: vultr-server-plans.md
-      - Vultr SSH Keys: vultr-ssh-keys.md
-      - Infrastructure Images: infrastructure-images.md
-      - Golden Images: golden-image.md
-  - Project Reference:
+      - Host Control Services: control-master.md
+      - Networking:
+          - DNS and Certificates: cloudflare.md
+          - Headscale Host Setup: headscale.md
+          - Private Network Management: headscale-management.md
+          - Host TLS Proxy: traefik.md
+          - Administrative SSH: administrative-ssh.md
+      - Salt:
+          - Master and API: salt-master.md
+          - Minion and Storage: salt-minion.md
+          - Asynchronous Execution: salt-async-apply.md
+          - Job Diagnostics: salt-job-diagnostics.md
+          - Durable Receipt Protocol: salt-result-recovery.md
+          - Pillar Preview: client-pillar-preview.md
+          - Custom States: custom-salt-states.md
+      - Provider and Images:
+          - Vultr Plans: vultr-server-plans.md
+          - Vultr SSH Keys: vultr-ssh-keys.md
+          - Infrastructure Images: infrastructure-images.md
+          - Client Golden Image: golden-image.md
+  - Reference and Maintenance:
+      - Documentation Maintenance: documentation-maintenance.md
       - Documentation Site: documentation-site.md
       - Namespace Migration: brand-migration.md
       - Android Booth Assistant Specification: odoo-experience-android-prompt.md

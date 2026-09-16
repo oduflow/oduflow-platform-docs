@@ -11,7 +11,7 @@ An access link expires after 15 minutes. The bearer token is placed in the URL
 fragment, so it is not sent in the landing request or ordinary access logs.
 The recipient explicitly selects **Reveal access** on a standalone page. A
 CSRF-protected POST consumes the grant once and shows Oduflow's UI password,
-Paseo's password, the production Odoo administrator login/password, and the
+the IDE password, the production Odoo administrator login/password, and the
 Oduflow MCP bearer token. A failed or lost response cannot replay a consumed link.
 Generating another link revokes all older links for that client.
 
@@ -26,9 +26,9 @@ only by that administrator in an allowed company. Consumption or revocation
 erases the encrypted delivery token. Credentials never enter the operation
 journal, queue arguments, notification payloads, or portal projection.
 
-The demo sets **Public Access Base URL** to
-`https://headscale.example.com` in Oduflow Settings.
-Traefik forwards only `/oduflow/access` and `/oduflow/access/reveal` to the private
+Set **Public Access Base URL** in [control settings](control-settings.md) to the
+actual HTTPS origin serving the access page. A deployment using the restricted
+control-host proxy forwards only `/oduflow/access` and `/oduflow/access/reveal` to the private
 VPN gateway. That gateway forwards only the bounded landing/reveal requests to
 Control Odoo; it does not expose the control interface or pillar endpoint.
 Pages disable caching, referrers, framing, indexing, and third-party resources.
@@ -80,7 +80,7 @@ or unknown revision.
 The fixed `roles.client_credentials` state verifies the client UUID, attached
 filesystem, runtime configuration, production receipt, and exact production
 container. It changes only the application UI/MCP passwords and production
-administrator password. Oduflow and Paseo restart only when their authentication
+administrator password. Oduflow and IDE restart only when their authentication
 checks require it. Production Odoo is updated through its ORM without restarting
 the production container. Database passwords and data are unchanged.
 

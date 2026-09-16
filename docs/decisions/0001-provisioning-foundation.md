@@ -2,6 +2,9 @@
 
 Accepted for the initial foundation on 2026-09-11. Later decisions extend this
 stage; statements below describe its boundaries, not the entire current system.
+In particular, current preparation may read GitHub to resolve a plan's `main`
+client version before freezing its SHA. The original no-network preparation
+boundary below is historical; see [client release selection](../client-releases.md#selecting-the-version-for-a-new-client).
 
 The user selected a separate Odoo 19.0 with a clean database, deployed through
 megaflow MCP using `template_name="none"`. This concerns the control plane;

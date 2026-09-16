@@ -8,7 +8,7 @@ long Salt operations run in detached workers and are polled by short jobs.
 
 This file is a configuration overlay. Preserve database connection settings,
 addon paths, and encryption/provider environment variables when applying it.
-Use Megaflow `update_environment`, inspect the effective `/etc/odoo/odoo.conf`,
+Use the target Oduflow MCP `update_environment`, inspect the effective `/etc/odoo/odoo.conf`,
 and merge this overlay into that file if the environment does not load it.
 Restart and verify a real queued task reaches `done`; installing the addon alone
 does not prove the runner is active. Never manually mark a failed job as done to

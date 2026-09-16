@@ -2,8 +2,21 @@
 
 Vultr server backups do not cover the attached client block volume. Oduflow
 therefore backs up the verified `/srv/oduflow/data` mount to a dedicated
-Cloudflare R2 bucket with Restic. This path contains Docker/containerd data and
-the Oduflow team and database data.
+Cloudflare R2 bucket with Restic **when the instance's frozen policy enables
+client data backup**. This path contains Docker/containerd data and the Oduflow
+team and database data.
+
+## Backup boundaries
+
+| Mechanism | Coverage | Verification |
+| --- | --- | --- |
+| Provider server backup / golden image | VM boot disk or installation software | Does not establish recovery of the attached client data volume |
+| Platform client data backup (this guide) | Cold Restic backup of the verified data mount | Repository check and byte-identical restore of a client-bound probe |
+| Customer application backup settings | Client Oduflow's configured S3/database backup policy | Requires its own successful backup and restore check |
+| Infrastructure master backup | Control-host state and identities | [Master backup and recovery](master-automation.md#backup-and-recovery) |
+
+[Customer backup settings](customer-configuration.md) are separate from the
+platform's R2/Restic policy. Applying either configuration alone proves no restore.
 
 ## Responsibility split
 
@@ -15,8 +28,8 @@ The control-plane Odoo owns external identity and lifecycle:
 - creates one account-owned API token scoped to that exact bucket;
 - encrypts the derived S3 credentials and Restic repository password;
 - journals the bucket and token identifiers without recording secret values;
-- releases production only after the Salt production job, including its first
-  backup and restore check, succeeds.
+- completes the production operation only after its opted-in backup and restore
+  check succeeds; public publication precedes that initial cold backup.
 
 Salt remains the configuration authority on the client VM. It installs Restic,
 writes the root-only environment file, installs the systemd service and daily
@@ -63,7 +76,7 @@ References:
 
 The initial backup runs after production publication. The helper verifies the
 storage ownership receipt and actual mount before touching data. It initializes
-only the assigned repository, stops active Oduflow, Paseo and Docker services,
+only the assigned repository, stops active Oduflow, IDE and Docker services,
 backs up the entire mount, and restarts exactly the services that were active.
 Service restart is attempted even if Restic fails.
 
@@ -86,7 +99,7 @@ was installed remain backup-disabled until a manager explicitly selects
 and queues the same guarded backup workflow; it does not rewrite the historical
 provisioning snapshot or recreate production.
 
-During full client client deletion, the control plane verifies and revokes the
+During full client deletion, the control plane verifies and revokes the
 exact bucket-scoped client token before erasing its encrypted secrets. Locked
 backup objects and their bucket remain for the configured retention window;
 client deletion does not claim that retained recovery data was deleted.

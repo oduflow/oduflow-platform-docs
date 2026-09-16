@@ -35,7 +35,7 @@ copied into the image. Do not put credentials in command arguments or committed
 Packer variable files.
 
 ```sh
-mkdir -p packer/output
+mkdir -p client/packer/output
 packer init client/packer/client.pkr.hcl
 packer validate client/packer/client.pkr.hcl
 packer build -var source_revision=REVIEWED_CLIENT_COMMIT client/packer/client.pkr.hcl
@@ -43,7 +43,7 @@ packer build -var source_revision=REVIEWED_CLIENT_COMMIT client/packer/client.pk
 
 Use an isolated checkout of a reviewed commit for the build. The builder uploads
 only the repository's `salt` tree and removes that temporary copy afterward.
-Final cleanup invokes the existing `salt/minion/clean-image.py` refusal checks,
+Final cleanup invokes the existing `client/salt/minion/clean-image.py` refusal checks,
 removes Salt and Tailscale identities, cloud-init instance data, SSH host keys,
 temporary authorized keys, machine ID and swap; it locks the temporary root
 password. The plugin requests shutdown through its existing SSH connection, takes the
@@ -53,7 +53,7 @@ is not claimed. The cleaned image must therefore be verified by a fresh clone.
 The snapshot is retained. Failed builds may need inspection of provider cleanup;
 never mistake an existing production instance for a disposable builder.
 
-`packer/output/manifest.json` records the resulting snapshot ID and source
+`client/packer/output/manifest.json` records the resulting snapshot ID and source
 revision. Snapshot descriptions begin with
 `oduflow-image-v1 ubuntu24.04 disk25 `. This is a compatibility marker on the
 operator's Vultr account, not a cryptographic image attestation.
@@ -85,8 +85,8 @@ Production and LLM keys are supplied separately through encrypted pillar.
 
 ## Validation and official references
 
-Packer init, formatting, full configuration validation and shell syntax checks
-pass. Tests cover the small clean builder, service masking, first-boot ordering,
+Run Packer init, formatting, full configuration validation and shell syntax
+checks for the selected revision. Tests cover the small clean builder, service masking, first-boot ordering,
 snapshot metadata, creation payload and exact-image reconciliation. Runtime
 snapshot creation and clone/enrollment checks are separate deployment evidence.
 

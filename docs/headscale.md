@@ -1,5 +1,7 @@
 # Headscale
 
+This page covers a **standalone control host**. For Headscale inside Oduflow
+services, use [Headscale in the stack](container-services.md#headscale-in-the-stack).
 For daily operations in Odoo, see [node management](headscale-management.md).
 
 `roles.control_plane` includes `headscale`, `control_proxy` and `control_vpn`.
@@ -57,6 +59,8 @@ The policy permits only these new TCP connections:
 | `tag:odoo` | `tag:master` | 8000 | Salt HTTPS API |
 | `tag:master` | `tag:odoo` | 443 | Odoo external pillar |
 | `tag:client`, `tag:odoo` | `tag:llm` | 4000 | LiteLLM HTTP over WireGuard |
+| `tag:master` | `tag:master` | 8081 | Optional private Headscale API proxy |
+| `tag:terminal-gateway` | `tag:client` | 22 | Administrative certificate SSH |
 
 Other connections, including client-to-client and client-to-Salt-API, are denied.
 LiteLLM inference and management share port 4000. LiteLLM authorization restricts
@@ -75,7 +79,7 @@ incoming DROP/REJECT and SSH allowed; the helper refuses an inactive/open-defaul
 firewall. Repeated application does not duplicate rules. Tailscale creates its
 own netfilter chains, so test actual Headscale ACL enforcement between live nodes.
 
-`tagOwners` is intentionally empty: users cannot self-assign infrastructure tags
+Each `tagOwners` entry has an empty owner list: users cannot self-assign infrastructure tags
 through `--advertise-tags`. An administrator assigns tags using local CLI or
 one-time tagged preauth keys. Persistent servers do not use ephemeral keys and
 need no reusable enrollment keys. Tagged nodes do not automatically expire their

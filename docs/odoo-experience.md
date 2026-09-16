@@ -1,6 +1,7 @@
 # Odoo Experience and partner registration
 
-Target: Odoo 19 control plane at `https://control.demo.odusfera.pl`.
+Target: the selected Odoo 19 control environment. Use its configured HTTPS origin
+for registration links; deployment-specific addresses belong in dated reports.
 Install `odoo_experience` and upgrade `oduflow_partner` for the registration
 models, ACLs, stored instance ownership and administrator search/grouping.
 

@@ -13,7 +13,7 @@ installed provider and integration modules must be upgraded in the same run.
 Before deployment, take a database/filestore backup, drain running queue jobs
 and supply the unchanged encryption key under `ODUFLOW_ENCRYPTION_KEY`.
 Rename other deployment environment keys to the `ODUFLOW_` prefix while
-preserving their values. Apply through Megaflow, including module upgrades.
+preserving their values. Apply through the target Oduflow MCP, including module upgrades.
 Verify record IDs/counts, secret decryption, the effective queue configuration,
 and a harmless real queued operation.
 
@@ -23,6 +23,28 @@ external address changes require reconciliation and fresh verification of the
 same owned resources. New and unprepared client instances use `oduflow.sh`.
 Existing domain cutovers require DNS access, certificates and coordinated VPN
 endpoint configuration.
+
+## Legacy addon-name migration
+
+This procedure applies only to a database that still has the predecessor addon
+installed. A new control database installs the current modules directly.
+
+1. Back up the database/filestore and retain the existing encryption key.
+2. Before loading the new checkout, run `scripts/rename-odoo-addon.py` in the old
+   Odoo shell with `env` available and commit its successful transaction. It
+   preserves the installed module record while renaming dependencies and
+   `base.module_*` XML IDs.
+3. Load the new source and upgrade `oduflow` first. Install `oduflow_vultr` in a
+   separate operation: delivery can install before upgrading within one
+   `pull_and_apply` call, which would precede the required ownership migration.
+   Migration `19.0.2.0.0` transfers XML-ID ownership without changing record IDs;
+   the pre-install hook handles remaining legacy metadata on first installation.
+4. Verify existing instances, secrets, journals, namespace reservations and
+   prepared addresses, then run the relevant addon tests.
+
+Do not uninstall the old addon as a migration shortcut: uninstall can remove its
+owned records. Select the procedure by the database's installed history, not by
+an old deployment report's hostname.
 
 ## Control master's repository
 

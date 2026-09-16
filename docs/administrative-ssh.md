@@ -3,7 +3,7 @@
 Oduflow Admin opens a root terminal from the control backend. Observer and portal
 users cannot open terminals, enable access, issue grants, or revoke sessions.
 Use the control environment HTTPS URL and a separate HTTPS hostname for the
-terminal. Megaflow publishes both through its native ingress.
+terminal. Oduflow Stack publishes both through its native ingress.
 
 ## Authentication and lifetime
 
@@ -60,7 +60,7 @@ The current deployment uses separate managed containers. It is process/container
 isolation, not a separate physical host or VM from the control environment.
 The same image can run on a dedicated gateway VM if host-level isolation is needed.
 
-Register the gateway with Megaflow's normal service route on port 8088. Its
+Register the gateway with Oduflow Stack's normal service route on port 8088. Its
 HTTP and WebSocket traffic uses the same HTTPS hostname. The listener is on the
 container network; do not publish a Docker host port. The signer has no HTTP
 listener and uses only its shared Unix socket. If service registration requires
@@ -86,7 +86,7 @@ new instances; existing instances remain explicitly controlled.
 
 ## Network setup
 
-Megaflow terminates HTTPS for the control Odoo environment and the terminal
+Oduflow Stack terminates HTTPS for the control Odoo environment and the terminal
 service. Configure HTTP-to-HTTPS redirection at that ingress. Keep
 `proxy_mode = True` in `.oduflow/odoo.conf`, and set/freeze `web.base.url` to the
 control environment's HTTPS origin. Configure that same origin as `odoo_url` in
@@ -94,9 +94,9 @@ both SSH services, and set `oduflow.ssh_gateway_url` to the gateway's HTTPS orig
 
 | Source | Destination | Purpose |
 | --- | --- | --- |
-| Browser HTTPS | Megaflow Odoo ingress | Control UI and password confirmation |
-| Browser HTTPS/WSS | Megaflow gateway ingress, container port 8088 | Terminal |
-| Gateway/signer HTTPS | Megaflow Odoo ingress | Signed authorization callbacks |
+| Browser HTTPS | Oduflow Stack Odoo ingress | Control UI and password confirmation |
+| Browser HTTPS/WSS | Oduflow Stack gateway ingress, container port 8088 | Terminal |
+| Gateway/signer HTTPS | Oduflow Stack Odoo ingress | Signed authorization callbacks |
 | Gateway Unix socket | Signer | Certificate signing |
 | `tag:terminal-gateway` | `tag:client:22` | Certificate SSH |
 
@@ -107,7 +107,7 @@ use the Salt master or Tailscale Serve. The existing private pillar route on
 1. Start signer and gateway services with the volumes and configuration above.
 2. Enroll the gateway with `tag:terminal-gateway`. Give its OS user Tailscale
    operator access and verify its VPN identity. Keep enrollment keys in files.
-3. Verify both public HTTPS origins and WebSocket forwarding through Megaflow.
+3. Verify both public HTTPS origins and WebSocket forwarding through the target Oduflow MCP.
    Odoo must recognize the forwarded HTTPS scheme; keep HTTPS checks, Secure
    cookies, CSRF, browser binding, and signed callbacks enabled.
 4. Register the services' public API keys and the CA public key in Odoo. Enable
@@ -121,7 +121,7 @@ use the Salt master or Tailscale Serve. The existing private pillar route on
 
 The SSH module no longer intercepts requests to a retired control hostname.
 Upgrade to `19.0.1.2.0` removes the obsolete system parameter. Hostname retirement
-and HTTP redirection belong to Megaflow's ingress configuration.
+and HTTP redirection belong to Oduflow Stack's ingress configuration.
 
 For an existing installation, verify native HTTPS ingress before removing the
 old routes. Remove `administrative_ssh` from the control master's configuration

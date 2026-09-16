@@ -1,5 +1,8 @@
 # Salt control services after VPN enrollment
 
+This page covers Salt services on a **standalone control host**. Oduflow service
+containers use the [platform stack](container-services.md) bootstrap instead.
+
 For queued SSH installation, verified backups and recovery to an empty target,
 see [master automation](master-automation.md). The steps below describe the
 underlying Salt role and remain useful for explicit maintenance.

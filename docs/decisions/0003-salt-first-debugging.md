@@ -1,6 +1,8 @@
 # 0003 — Odoo creates client VMs; Salt configures the client stack
 
-Status: Accepted.
+Status: Accepted. The architectural boundary remains current. The named API
+version below records the original validation; the selected client release's
+artifact manifest determines the installed package. See [client releases](../client-releases.md).
 
 The control-plane Odoo runs in Megaflow with the instance model, queue and external
 adapters. Provisioning starts there: it creates a client VM through the provider

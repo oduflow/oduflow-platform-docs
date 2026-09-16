@@ -6,7 +6,7 @@ own provider, variables and manifest.
 
 | Server | Template | Snapshot contract | Manifest |
 | --- | --- | --- | --- |
-| Client | `client/packer/client.pkr.hcl` | `oduflow-image-v1` | `packer/output/manifest.json` |
+| Client | `client/packer/client.pkr.hcl` | `oduflow-image-v1` | `client/packer/output/manifest.json` |
 | Salt Master | `packer/master.pkr.hcl` | `oduflow-master-image-v1` | `packer/output/master-manifest.json` |
 | LiteLLM | `packer/litellm.pkr.hcl` | `oduflow-litellm-image-v1` | `packer/output/litellm-manifest.json` |
 
@@ -18,7 +18,7 @@ required on every cloned server.
 
 ## Contents and Salt reuse
 
-Both new images reuse `salt/minion/install.sh` to install the pinned Salt
+Both infrastructure images reuse `client/salt/minion/install.sh` to install the pinned Salt
 3006.27 and Tailscale 1.102.4 prerequisites from verified repositories.
 
 The Master image adds Salt Master/API 3006.27 and applies
@@ -32,7 +32,7 @@ install the hash-locked native gateway, generated Prisma client, metering virtua
 and runtime helper files. Native VM installation and the OCI image reuse this state.
 The ordinary guarded `litellm.install` chooses packages for the requested runtime. It still requires a
 valid identity and verified block volume before writing runtime settings.
-No Client Oduflow/Paseo application build runs in either infrastructure image.
+No Client Oduflow/IDE application build runs in either infrastructure image.
 
 Docker/containerd stay masked. On LiteLLM images, their systemd drop-ins also
 require `/srv/oduflow/data` to be a mount point. There are no OCI image caches,
@@ -59,7 +59,7 @@ packer validate packer/litellm.pkr.hcl
 packer build -var "source_revision=$(git rev-parse HEAD)" packer/litellm.pkr.hcl
 ```
 
-Packer creates a disposable VM, uploads only `salt/`, installs dependencies and
+Packer creates a disposable VM, uploads the platform and pinned client Salt sources, installs dependencies and
 runs cleanup. It then creates a private snapshot on the account owning the API
 key and removes the builder VM and temporary SSH-key record on successful
 completion. Each manifest records the snapshot ID and source revision.

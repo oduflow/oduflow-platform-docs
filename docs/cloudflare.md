@@ -9,15 +9,17 @@ authoritative DNS. Configure an ACME contact for the installation.
 | Purpose | Name | DNS and TLS |
 | --- | --- | --- |
 | Control host | `headscale.example.com` | A → `192.0.2.10`, DNS-only, direct TLS |
-| Client production | `<company>.oduflow.sh` | A → client VM, DNS-only, Traefik HTTPS |
-| Client Oduflow | `oduflow.<company>.oduflow.sh` | Client wildcard A, Traefik HTTPS |
-| Client Paseo | `paseo.<company>.oduflow.sh` | Client wildcard A, Traefik HTTPS |
-| Branch/service route | `<name>.<company>.oduflow.sh` | Client wildcard A, Traefik HTTPS |
+| Client production | `<slug>.oduflow.sh` | A → client VM, DNS-only, Traefik HTTPS |
+| Client Oduflow | `oduflow.<slug>.oduflow.sh` | Client wildcard A, Traefik HTTPS |
+| Client IDE | `ide.<slug>.oduflow.sh` | Client wildcard A, Traefik HTTPS |
+| Branch/service route | `<name>.<slug>.oduflow.sh` | Client wildcard A, Traefik HTTPS |
 
-Create `<company>.oduflow.sh` and `*.<company>.oduflow.sh` with
+Create `<slug>.oduflow.sh` and `*.<slug>.oduflow.sh` with
 `proxied=false`. Publish AAAA only when IPv6 actually works. TCP 80 supports
 HTTP-01 issuance and HTTPS redirects; TCP 443 serves Traefik. Administrative Salt
-ports remain inside the VPN. Reserve the Oduflow/Paseo names against branch use.
+ports remain inside the VPN. Existing managed Oduflow/IDE routes cannot be
+replaced by custom routes. This does not reserve a fixed list of names across the
+client namespace; quotas limit counts, not specific `devN` or `svcN` names.
 
 DNS-only is deliberate: browsers see Traefik's certificate directly. With
 Cloudflare proxy enabled, Cloudflare presents its own edge certificate. Universal
@@ -37,7 +39,7 @@ Tunnel hostnames.
 The implemented client uses **HTTP-01 for concrete hostnames**, including the
 production apex and both panels. Wildcard DNS routing does not mean the TLS
 certificate must itself be a wildcard. No broad Cloudflare API token is delivered
-to the client. Oduflow 1.75 manages Traefik and its persistent ACME volume.
+to the client. The selected Client Oduflow release manages Traefik and its persistent ACME volume.
 
 A conceptual static resolver configuration is:
 
@@ -66,7 +68,7 @@ guard and post-hardening ACME retry.
 
 ## Optional future wildcard certificates
 
-A certificate for `<company>.oduflow.sh` and `*.<company>.oduflow.sh` would
+A certificate for `<slug>.oduflow.sh` and `*.<slug>.oduflow.sh` would
 require DNS-01. Wildcards cover one additional label; `*.*.oduflow.sh` is invalid.
 Traefik/Lego can create `_acme-challenge` TXT records using its `cloudflare`
 provider. Such a design is not enabled by the current client role.
@@ -80,11 +82,23 @@ central certificate issuer would need a separate design.
 [Lego Cloudflare provider](https://go-acme.github.io/lego/dns/cloudflare/),
 [Traefik DNS challenge](https://doc.traefik.io/traefik/reference/install-configuration/tls/certificate-resolvers/acme/#dnschallenge).
 
+## Development route compatibility
+
+Check the generated hostname when creating a development environment. The
+historically tested Oduflow 1.75 branch mode appended the team hostname; an
+explicit short hostname was needed for a route directly under the client domain.
+Do not infer the final address from a branch name alone. Use the selected release's
+configuration contract and verify its actual DNS/TLS route.
+
 ## Odoo contract and migration
+
+Earlier nested snapshots can retain `paseo.<slug>.<domain>`. Use the recorded
+instance address or the explicit [IDE hostname migration](ide-installation.md);
+new defaults do not change an existing instance.
 
 New instances use `oduflow.sh`, `naming_version=nested_v2` and
 `ingress_mode=direct_tls`. Production uses `<slug>.<domain>`, Oduflow uses
-`oduflow.<slug>.<domain>` and Paseo uses `paseo.<slug>.<domain>`. The client owns
+`oduflow.<slug>.<domain>` and IDE uses `ide.<slug>.<domain>`. The client owns
 `*.<slug>.<domain>`; its Oduflow chooses names within that namespace. The control
 plane does not reserve individual `devN`/`svcN` slots.
 

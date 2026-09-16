@@ -3,13 +3,28 @@
 The source implementation provides one independent gateway per managed host and
 one exporter per source database. It does not install a common/front gateway.
 `roles.litellm` uses the existing exact `client-<UUID>` identity, provider-verified
-storage device and storage ownership checks. Docker/containerd data and the
-SQLite ledger stay on `/srv/oduflow/data`. By default the role provisions PostgreSQL 16.15 using a pinned Docker Official
-Image digest, an internal Docker network and loopback-only port 5433. PostgreSQL
-data stays under `/srv/oduflow/data/litellm/postgres`. Source ownership labels and
-a protected volume marker prevent adopting unknown containers, networks or data.
-The addon generates and encrypts its password; no secret enters command arguments.
-An explicitly selected external PostgreSQL service is also supported.
+storage device and storage ownership checks. Host data, including the SQLite
+ledger, stays on `/srv/oduflow/data`. Container deployments use the separately
+verified persistent volume contract in [platform stack](container-services.md).
+
+## Choose the runtime and database
+
+| Deployment | Application runtime | Database |
+| --- | --- | --- |
+| New managed gateway record | Native systemd release by default | Explicit external PostgreSQL DSN by default |
+| Oduflow platform stack | The same native release inside an OCI systemd service | A service database in Oduflow's existing PostgreSQL |
+| Existing Docker gateway | Its preserved pinned extended image | Its selected external or managed PostgreSQL configuration |
+
+New defaults do not migrate existing gateways or immutable revisions. In Docker
+mode, build the extended image before selecting its digest. In native mode, use
+the release and dependency lock described in [native services](container-services.md#native-application-release).
+Switching modes or moving database/ledger data is an explicit migration.
+
+When **managed PostgreSQL** is selected on a host, the role provisions PostgreSQL
+16.15 with a pinned Docker Official Image, private network and loopback port 5433.
+Its data is `/srv/oduflow/data/litellm/postgres`; ownership labels and a volume marker
+reject unknown data. The addon encrypts its generated password. The platform stack
+uses an external service database and does not start a nested PostgreSQL server.
 
 ## Runtime contract
 
@@ -18,8 +33,8 @@ The initial adapter contract is LiteLLM **v1.100.1**, upstream commit
 for the reviewed upstream host-header authentication and request-routing SSRF
 advisories. Review future upstream advisories before upgrading; each supported
 runtime change needs the schema/admission adapter contract tests.
-Use the supplied `salt/states/litellm/files/Dockerfile` with a reviewed immutable
-upstream base digest, then set the resulting image digest in Odoo. Runtime
+For **Docker mode**, use `salt/states/litellm/files/Dockerfile` with a reviewed
+immutable upstream base digest and select the resulting extended image. Runtime
 validation requires `litellm==1.100.1` and `psycopg==3.2.10`; the exporter also pins
 `psycopg[binary]==3.2.10` and `typing_extensions==4.15.0`.
 
@@ -27,10 +42,11 @@ Pillar `oduflow:litellm` contains:
 
 | Field | Meaning |
 | --- | --- |
-| `image`, `software_version` | Immutable extended runtime image and the adapter version. |
+| `runtime_mode`, `runtime_release` | Native or Docker execution; native mode binds the supported release identifier. |
+| `image`, `software_version` | Immutable extended image in Docker mode; supported adapter version in either mode. |
 | `config`, `desired_digest` | Authoritative structured config and SHA256 of canonical JSON with sorted keys and compact separators. |
 | `environment` | Master key and only backend secrets referenced by model configuration. |
-| `managed_postgres`, `postgres_password` | Default managed database with an encrypted generated password of at least 32 characters. |
+| `managed_postgres`, `postgres_password` | Explicit managed-database selection and its encrypted generated password of at least 32 characters. |
 | `database_url` | Managed `postgresql://oduflow:<encoded-password>@127.0.0.1:5433/litellm` or an explicitly external durable PostgreSQL DSN. |
 | `source_id`, `incarnation` | Control-plane approved UUIDs, stable across process restart. |
 | `ingest_url`, `ingest_secret` | Explicit HTTP(S) aggregate endpoint and independent per-source HMAC secret. Use HTTP only inside a trusted private network or VPN; use HTTPS over public networks. |
@@ -56,7 +72,7 @@ separate from Odoo's own customer tariffs. The runtime refuses zero enforcement 
 the gateway budget checks.
 
 The helper validates configuration before activation and parses the candidate
-with the actual pinned container SDK. JSON is emitted as valid YAML. A protected
+with the actual pinned SDK in the selected runtime. JSON is emitted as valid YAML. A protected
 revision directory snapshots configuration, secret environment, metering contexts,
 listener settings and admission/exporter code. The atomic `active` symlink restores
 the entire previous revision;
@@ -181,11 +197,11 @@ The callback test executes its real SQL with a lightweight upstream class bounda
 it does not establish a live LiteLLM streaming integration. Salt templates are
 rendered with the repository's existing state-contract harness.
 
-Before marking a new gateway verified, build/review its pinned image, apply the
-Salt role including managed PostgreSQL, issue a real managed key and compare
+Before marking a gateway verified, install its reviewed native release or pinned
+Docker image, configure the selected database, issue a real managed key and compare
 a text and streaming request against the provider response, source admission/spool,
 SQLite bucket, processed Odoo receipt and cutoff. Also test cancellation and a lost
-source-write scenario against that image. Local fixtures do not prove provisioning,
+source-write scenario against that runtime. Local fixtures do not prove provisioning,
 public readiness, provider token semantics or live upstream callback propagation.
 
 Pinned upstream references:
@@ -208,7 +224,7 @@ Current release/security review references:
 Open **Infrastructure / Inference / Servers**. Each existing gateway record is an
 independent LiteLLM server; model names and historical database identities remain
 unchanged. Configure its management URL, optional client URL, allowed model aliases,
-default model, reasoning effort, API mode, encrypted credentials and pinned image.
+default model, reasoning effort, API mode, encrypted credentials and runtime selection.
 An empty allowed-model list uses the server's active backend model aliases.
 
 Assign one platform host under Nodes. **Provision Host** prepares that host and
@@ -228,5 +244,5 @@ The old configuration parameter names remain for backward compatibility.
 in the Headscale-managed network. **Trusted Pillar Proxy Host** is the inbound
 proxy's internal DNS name: Odoo resolves it and checks the direct connection peer,
 in addition to the pillar bearer token. The deployed hostname
-`oduflow-1-svc-oduflow-vpn` identifies the Megaflow `oduflow-vpn` service, not an
+`oduflow-1-svc-oduflow-vpn` identifies the Oduflow Stack `oduflow-vpn` service, not an
 inference server or a public pillar URL.

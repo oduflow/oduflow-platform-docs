@@ -12,7 +12,7 @@ permissions. The existing XML identifier `oduflow.group_manager` is preserved
 so current administrators and references remain valid. Odoo groups are additive:
 granting Admin together with Observer gives Admin permissions.
 
-## Client client deletion
+## Client deletion
 
 **Delete Client** opens a separate confirmation dialog. Opening the dialog
 does not schedule or perform deletion. The administrator must enter their own

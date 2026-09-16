@@ -27,6 +27,8 @@ directly from GitHub over HTTPS; no download token, repository key or control
 proxy is involved. GitHub App authentication is not required for public software
 repositories. Client-owned project repositories retain their separate write access.
 
+## Hostnames and compatibility
+
 New client subdomains use `ide.<slug>.<domain>`. Existing provisioning snapshots
 retain their original names. On a configured client, **Use IDE Hostname** records
 an operational hostname override and queues a new configuration; it does not
@@ -34,3 +36,33 @@ rewrite the original provisioning snapshot. Resolve running or uncertain jobs
 before migrating. The new route becomes available only after Salt applies it.
 The internal `paseo` pillar key and package/service identifiers are retained for
 compatibility; UI labels use IDE.
+
+## Runtime archives for maintainers
+
+The selected client's `salt/states/client_apps/artifacts.json` pins the IDE source
+commit, version and Node version. From the **client repository root**,
+`scripts/build-paseo-runtime.py` builds the runtime; its CI workflow produces an
+archive and metadata for review. Publish verified archives as public release
+assets in `oduflow/paseo` before registering an IDE Build in Odoo.
+
+Salt receives the frozen selection through the retained technical keys:
+
+```yaml
+paseo:
+  install_method: prebuilt
+  runtime:
+    source: https://github.com/oduflow/paseo/releases/download/RELEASE/ARCHIVE.tar.gz
+    hash: sha256=REVIEWED_ARCHIVE_SHA256
+```
+
+These are placeholders, not a usable build. Use the URL and checksum from the
+verified build record. Source mode is `install_method: source`. A `salt://` URL
+must resolve within the selected client's local release file roots.
+
+The archive contains installed workspaces and npm dependencies; Node is installed
+separately. Before extraction, the installer checks the archive hash, OS version,
+architecture, Node/IDE versions and full source commit. A mismatch fails without
+silently compiling from source. A matching installed release can be reused.
+
+An IDE archive is distinct from a [client VM image](golden-image.md). Verifying
+an archive does not establish a complete client deployment or public readiness.

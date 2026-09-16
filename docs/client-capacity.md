@@ -1,10 +1,14 @@
 # Client capacity measurements
 
 A small server must be measured with the complete deployed service set: Odoo 19,
-PostgreSQL, Oduflow, Traefik, Paseo, Salt Minion, Tailscale and Docker/containerd.
+PostgreSQL, Oduflow, Traefik, IDE, Salt Minion, Tailscale and Docker/containerd.
 An idle Odoo process alone does not establish usable client capacity.
 
 ## Procedure
+
+The probe source is `scripts/capacity_probe.py` in the platform repository.
+Transfer the reviewed standalone script to the target client and run it there
+as root; the commands below assume its directory is the working directory.
 
 1. Sample `/proc/meminfo`, `/proc/vmstat`, `/proc/stat`, load averages and CPU,
    memory and I/O pressure every two seconds during cold installation. Keep the
@@ -27,7 +31,7 @@ An idle Odoo process alone does not establish usable client capacity.
    local Traefik. TLS validates the real production hostname. It does not log in,
    modify business records, create environments, or bypass authentication.
 5. Continue sampling while running one authenticated Odoo read-only workflow and
-   one real Paseo/OpenCode coding task. Record their start/end timestamps and
+   one real IDE/OpenCode coding task. Record their start/end timestamps and
    results separately. Upstream model/DNS failures are not local capacity proof.
 6. Inspect effective Odoo workers and memory thresholds, PostgreSQL settings,
    container memory limits, systemd memory and restart counters, and filesystem
@@ -58,7 +62,7 @@ latency grows. CPU saturation during package extraction is distinct from a
 server that remains saturated during a single ordinary request.
 
 The committed client configuration does not currently set explicit systemd
-memory caps for Oduflow/Paseo or pass per-production resource limits in the create
+memory caps for Oduflow/IDE or pass per-production resource limits in the create
 request. Effective Odoo/PostgreSQL defaults come from the pinned Oduflow package
 and generated stack and must be inspected on the deployed client. The control
 Odoo's `.oduflow/odoo.conf` is not the client production configuration.

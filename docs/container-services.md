@@ -191,7 +191,7 @@ For manual deployment alongside the existing control Odoo, add
 `ManualServicePlan`, not an applyable Stack: it contains services, databases,
 volumes and protected file requirements, and deliberately omits environment
 creation/update. The VPN upstream is the existing `oduflow-<team>-<control-environment>-odoo`.
-Use the plan with Megaflow service tools. Do not feed this plan to `stack apply`
+Use the plan with Oduflow service tools. Do not feed this plan to `stack apply`
 or replace the running control environment's credentials with test values.
 
 Metering source/key/rating records and control-plane URLs must be initialized

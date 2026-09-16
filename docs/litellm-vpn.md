@@ -1,9 +1,12 @@
 # LiteLLM over the private Tailscale network
 
-The operator manages the LiteLLM host. It is registered with Headscale as
-`litellm`, tagged `tag:llm`, with VPN address **100.64.0.4**. The selected API
-endpoint is **http://100.64.0.4:4000**. WireGuard encrypts the traffic between VPN
-peers; a separate HTTPS listener and DNS record are not required for this setup.
+This guide describes connectivity to a LiteLLM endpoint over Tailscale. Runtime
+installation and metering are covered in [managed LiteLLM](litellm-managed.md).
+
+The examples use hostname `litellm`, tag `tag:llm` and VPN address `100.64.0.4`.
+Use the address assigned to your actual node; enrollment order does not guarantee
+that address. WireGuard encrypts peer traffic, so the permitted private HTTP
+endpoint does not require a separate HTTPS listener.
 
 ## Host configuration
 
@@ -13,7 +16,7 @@ interface. When publishing a Docker port, bind it to the VPN address, for exampl
 Retain LiteLLM authentication. Do not publish the management key in client
 configuration or disable authentication because the transport is private.
 
-The deployed Headscale policy permits `tag:client` and `tag:odoo` to connect to
+The managed Headscale policy permits `tag:client` and `tag:odoo` to connect to
 `tag:llm` on TCP 4000. Client-to-client access remains denied. Inference and
 management use the same listener, so HTTP endpoint authorization is enforced by
 LiteLLM keys rather than separate network ports:
@@ -79,7 +82,7 @@ API Mode: responses
 Use actual configured model aliases. The management credential remains in the
 `ODUFLOW_LITELLM_MANAGEMENT_KEY` environment secret. The management URL has no `/v1` suffix because
 its adapter calls `/key/generate` and `/key/info`. The client base URL includes
-`/v1` and is passed unchanged to OpenCode. The selected `gpt-5.6-sol` alias uses
+`/v1` and is passed unchanged to OpenCode. The example `gpt-5.6-sol` alias uses
 the Responses API and medium reasoning. Other deployments may explicitly select
 `chat_completions` for a compatible model. Model choice and reasoning settings
 are frozen with the encrypted provisioning configuration and included in Salt
@@ -93,15 +96,15 @@ Changing a management key's owner in LiteLLM preserves the key fingerprint; do
 not replace an in-flight candidate or clear its durable dispatch receipt merely
 to retry an ambiguous creation.
 
-Control Odoo needs the explicit SOCKS proxy because its VPN gateway uses userspace
-networking. Client VMs and their Paseo/OpenCode processes use their host's ordinary
+Control Odoo needs the explicit SOCKS proxy when its VPN gateway uses userspace
+networking. Client VMs and their IDE/OpenCode processes use their host's ordinary
 Tailscale routes. They need no additional VPN identity per agent.
 
 Client URL validation permits HTTP only for literal IPv4 addresses inside
 `100.64.0.0/10`. Public addresses, arbitrary HTTP hostnames and credentials in URLs
 remain invalid. HTTPS remains supported for other deployments.
 
-Apply environment changes through Megaflow `update_environment`. Issue a client
+Apply environment changes through the target Oduflow MCP `update_environment`. Issue a client
 key, apply updated Salt configuration, then verify inference and a coding-agent
 session before marking the complete client workflow successful.
 

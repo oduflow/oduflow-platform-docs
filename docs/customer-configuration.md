@@ -19,12 +19,29 @@ The editor contains:
   diagnostic tracing and local-path development.
 - Custom Routes: named HTTP(S) upstreams using unused hostnames within the
   client's namespace. DNS must already resolve the hostname to the client.
-  Existing platform hostnames and the managed Paseo route cannot be replaced.
+  Existing platform hostnames and the managed IDE route cannot be replaced.
 
 The platform still owns listener addresses, ports, routing/TLS mode, storage
 paths, database credentials, component images, production enablement and OAuth
 routing. Administrators retain the existing draft-only deployment fields.
 Password/access-link and GitHub SSH-key actions remain separate from this editor.
+
+**Disable telemetry** is off by default, so telemetry is enabled unless the
+customer explicitly disables it. Saved settings on existing clients are preserved.
+
+## Certificate contact
+
+Set **Settings → Oduflow → Certificates → Default Let's Encrypt Contact** to
+choose the email prefilled for new clients. The initial platform default preserves
+the previous contact, `litnimaxster@gmail.com`. Changing the default does not
+replace contacts already saved on clients.
+
+An administrator can edit **Configuration → Connection → Certificate Contact**
+on a draft or an operational client. For an operational client, use **Save & Apply**
+to queue the change. The contact is frozen in the configuration revision; saving
+another draft never changes the contact used by an already queued application.
+The original deployment snapshot remains unchanged. Pending operations and
+configuration revisions must be completed or reconciled before another edit.
 
 ## Saving and applying
 
@@ -76,9 +93,9 @@ platform's actual hosts or publish a cloud metadata endpoint.
 
 ## Verification
 
-Run Odoo configuration, credential and portal suites through Megaflow. Run local
+Run Odoo configuration, credential and portal suites through the target Oduflow MCP. Run local
 `test_customer_settings.py`, `test_client*.py` and `test_salt_apply.py` with the
-Salt test dependencies. The complete rendered TOML also passes parsing and
-validation by the checksum-verified Oduflow 1.75.0 package. DOM checks cover
+Salt test dependencies. Validate the complete rendered TOML with the Oduflow package pinned by the
+selected client release. Browser checks should cover
 conditional sections, adding/removing table rows, submission serialization,
 lifecycle switches and editable quota controls.

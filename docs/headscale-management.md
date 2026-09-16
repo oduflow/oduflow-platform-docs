@@ -106,7 +106,7 @@ Inventory is bounded and fails rather than silently truncating. Request receipts
 live under `/var/cache/salt/oduflow-headscale`, owned by Salt, directory mode
 0700 and file mode 0600. Global Salt job and pillar caches stay disabled. Deploy
 the matching Salt runner/configuration before installing the addon, then use
-Megaflow `pull_and_apply(install="oduflow_headscale")` and verify a real queued
+Oduflow MCP `pull_and_apply(install="oduflow_headscale")` and verify a real queued
 inventory operation.
 
 API contract references:

@@ -1,10 +1,12 @@
 # Salt Master
 
-The repository provides Salt 3006 configuration, authenticated external pillar,
-and restricted runner methods for client enrollment and execution. The control
-plane and a real client have been deployed and tested; see the
-[deployment journal](https://github.com/oduflow/oduflow-platform/blob/main/reports/deployments/deployed-control-plane.md) for evidence and remaining work.
-Generating configuration alone does not provision a VM or establish VPN/TLS.
+This guide defines Salt master configuration, authenticated external pillar and
+restricted runners for enrollment/execution. Deploy through the
+[platform stack](container-services.md) or [standalone master automation](master-automation.md)
+as appropriate. The host installation below describes the underlying components.
+Dated [deployment evidence](https://github.com/oduflow/oduflow-platform/blob/main/reports/deployments/README.md)
+is separate from this source contract; rendering configuration alone does not
+establish working VPN, TLS or client provisioning.
 
 ## Generate and install
 

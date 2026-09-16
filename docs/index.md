@@ -12,7 +12,7 @@ hide:
     and operate your infrastructure from one <strong>Odoo 19 control plane</strong>.
   </p>
   <div class="odu-hero__actions">
-    <a class="odu-btn odu-btn--primary" href="spec/">Explore the Platform →</a>
+    <a class="odu-btn odu-btn--primary" href="start-here/">Find Your Guide →</a>
   </div>
 </section>
 
@@ -78,13 +78,13 @@ hide:
         <div class="odu-map__instance">
           <div class="odu-map__instance-heading"><strong>Client A</strong><span>Independent environment</span></div>
           <div class="odu-map__production">Production Odoo <span>+ PostgreSQL &amp; client data</span></div>
-          <div class="odu-map__runtime"><span>Oduflow <small>Application lifecycle</small></span><span>Paseo <small>Development workspace</small></span></div>
+          <div class="odu-map__runtime"><span>Oduflow <small>Application lifecycle</small></span><span>IDE <small>Development workspace</small></span></div>
           <div class="odu-map__foundation"><span>Salt Minion</span><span>Tailscale</span><span>Attached storage</span></div>
         </div>
         <div class="odu-map__instance">
           <div class="odu-map__instance-heading"><strong>Client B</strong><span>Independent environment</span></div>
           <div class="odu-map__production">Production Odoo <span>+ PostgreSQL &amp; client data</span></div>
-          <div class="odu-map__runtime"><span>Oduflow <small>Application lifecycle</small></span><span>Paseo <small>Development workspace</small></span></div>
+          <div class="odu-map__runtime"><span>Oduflow <small>Application lifecycle</small></span><span>IDE <small>Development workspace</small></span></div>
           <div class="odu-map__foundation"><span>Salt Minion</span><span>Tailscale</span><span>Attached storage</span></div>
         </div>
       </div>

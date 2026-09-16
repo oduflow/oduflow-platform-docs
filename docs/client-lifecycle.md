@@ -17,7 +17,7 @@ reason; it never shortens the existing term or rewrites the provisioning snapsho
 An expired suspended demo needs an extension before **Resume**. Extending alone
 does not resume services. No operation sends customer mail or deletes resources.
 
-Suspension stops Oduflow, Paseo and its proxy, gracefully stops running Docker
+Suspension stops Oduflow, IDE and its proxy, gracefully stops running Docker
 containers, then stops Docker/socket activation and containerd. A durable receipt
 preserves the service/container inventory. Systemd conditions prevent their
 restart while the suspension marker exists, including after a reboot. Salt Minion,

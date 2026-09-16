@@ -19,13 +19,14 @@ Paddle: [merchant setup](https://github.com/oduflow/oduflow-platform/blob/main/a
    before provisioning. Assign it as the gateway's node. This uses the normal
    provider ownership and verified volume workflow, without installing a
    customer's production Odoo stack on the gateway host.
-5. Build the extended runtime image described in `litellm-managed.md`; configure
-   its immutable digest, private bind address and backend deployments. Enter
-   credentials through the encrypted credential wizard. The default managed
-   PostgreSQL password is generated and encrypted by Odoo.
+5. Select the [gateway runtime and database](litellm-managed.md#choose-the-runtime-and-database).
+   New records default to native execution and an external database DSN. Existing
+   Docker gateways retain their mode and need a verified extended image digest.
+   Configure the private listener, backends and encrypted credentials.
 6. Configure the source's HTTPS ingestion URL and initialize its authentication.
-   Prepare, review and apply the gateway configuration revision. Salt installs
-   the gateway, managed PostgreSQL and aggregate exporter on the verified volume.
+   Prepare, review and apply the gateway revision. On a managed host, Salt applies
+   the runtime/exporter and the selected database configuration. For platform
+   service containers, use the [stack deployment workflow](container-services.md).
 7. Explicitly create a customer's server subscription or mark a quotation line
    **Create Server Subscription**. Set the customer server and tariff. Activate
    billing only after the customer server has been verified active.

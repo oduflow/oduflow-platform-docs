@@ -1,7 +1,7 @@
 # Salt result recovery with durable minion receipts
 
-The repository implements protocol 1 in the `oduflow_job` minion execution
-module and the `oduflow` master runner. Deployment and live verification must
+The `oduflow_job` minion module and `oduflow` master runner support versioned
+durable receipts. Deployment and live verification must
 be reported separately: local protocol tests do not prove that an existing
 client has received the module or survived a real transport failure.
 
@@ -10,12 +10,25 @@ including master IPC failures. It does not recreate receipts for older jobs.
 Existing ambiguous legacy dispatches still require explicit reconciliation and
 must never trigger another automatic apply.
 
+## Protocol versions
+
+| Protocol | Binding beyond minion/request/JID/profile/state digest | Use |
+| --- | --- | --- |
+| 1 | None | Historical fixed-state requests |
+| 2 | `client_revision` | Client work from an immutable release checkout |
+| 3 | `source_digest` instead of `client_revision` | Addressed infrastructure source bundles |
+
+Capability checks must match the requested protocol. Old receipts remain readable;
+they do not retroactively prove that a client applied a newer release. See
+[client releases](client-releases.md) for selection and verification fields.
+
 ## Execution and identity
 
 The master persists its request UUID, exact client identity, role/profile and
 20-digit Salt JID before publication. New requests require the minion's protocol
 capability; failure to verify it stops dispatch. The master publishes
-`oduflow_job.run(request_id, profile, state_data_json)` once, using that JID.
+`oduflow_job.run` once, using that JID and the protocol-bound revision/source
+arguments as applicable.
 It records the dispatch intent before calling Salt, so a lost acknowledgement
 cannot authorize another publication.
 
@@ -33,6 +46,8 @@ exact JID and profile. Supported profiles map to fixed roles:
 | `production` | `roles.client_production` |
 | `volume_resize` | `roles.client_storage_resize` |
 | `credentials` | `roles.client_credentials` |
+| `litellm` | `roles.litellm` |
+| `litellm_sync` | `litellm_metering.sync` |
 | `custom` | Canonical bounded high data, bound by SHA-256 digest |
 
 The wrapper rejects caller execution options. Fixed-role calls set `test=False`,
@@ -59,8 +74,9 @@ cannot execute again. A request is never recovered by assigning a new JID. The m
 unrelated JID indexes to discover this incomplete binding; the master must
 retain its original JID even when only the first write survived.
 
-After state execution, the wrapper reduces its result and commits this schema
-before returning to Salt:
+After state execution, the wrapper reduces its result and commits a receipt
+before returning to Salt. This is the historical protocol-1 shape; protocol 2
+binds `client_revision`, while protocol 3 binds `source_digest` instead:
 
 ```json
 {
@@ -133,15 +149,15 @@ finished. Application and infrastructure verification remains separate.
 
 ## Bootstrap and verification
 
-Cloud-init carries the module as a reviewed bootstrap asset and installs it in
+The selected client release supplies the reviewed bootstrap module and installs it in
 the minion extension-module directory before starting the managed minion. Salt's
 `client_receipts` state keeps that file managed afterward. Capability checking
 prevents a new request from silently falling back to unreceipted execution on an
 older client. Legacy master records retain their original interpretation.
 
-`tests/test_minion_receipts.py` covers reduced schema, identity/role restrictions,
+`client/tests/test_minion_receipts.py` covers reduced schema, identity/role restrictions,
 private storage, duplicate execution and pinned-Salt loader/state integration.
-`tests/test_salt_receipt_protocol.py` independently uses real process forks,
+`client/tests/test_salt_receipt_protocol.py` independently uses real process forks,
 `SIGKILL`, file locks and a local side-effect marker to verify interruption before
 and after terminal commit, lost publication, concurrent polls and duplicate
 workers. These tests do not publish network jobs or perform live provisioning.

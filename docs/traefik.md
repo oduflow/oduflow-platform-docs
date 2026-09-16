@@ -1,5 +1,9 @@
 # Control-host TLS proxy
 
+This page covers the **standalone control-host proxy**. It is separate from
+Client Oduflow's Traefik and from the platform service ingress described in
+[platform stack](container-services.md).
+
 `control_proxy` installs official Traefik **3.7.13 linux/amd64** under systemd.
 It serves the configured coordination hostname and proxies Headscale at `127.0.0.1:8080`.
 It is included in `roles.control_plane`; it can also be applied separately:

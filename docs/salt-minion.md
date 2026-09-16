@@ -1,15 +1,18 @@
 # Salt minion and client storage foundation
 
-This increment provides enrollment of a clean Ubuntu host, safe XFS
-storage preparation, and systemd storage guards. It does **not** install Oduflow,
-Paseo, Headscale/Tailscale, Docker or cloudflared, nor claim application readiness.
-No cloud resource is created by these scripts. Start with the
-[clean-server debugging workflow](client-debugging.md); golden-image packaging
-is deferred.
+Client bootstrap installs Tailscale and Salt Minion, enrolls the expected
+identity and establishes trusted configuration transport. Storage states then
+verify the owned XFS volume and install systemd mount guards. Application
+installation and production verification are later stages of the
+[client deployment workflow](client-debugging.md).
+
+Source paths in this page are relative to the **platform repository root**.
+Optional [golden images](golden-image.md) reuse the same installation and cleanup
+helpers; they do not contain enrolled client identities.
 
 ## Enrollment contract
 
-First run `salt/minion/install.sh` on the clean host to install signed, pinned
+The selected release runs `client/salt/minion/install.sh` on the clean host to install signed, pinned
 Salt 3006, Tailscale, Python 3 and OpenSSL, then join Headscale. The master listens on
 its explicit Headscale IPv4 address. Provision the minion key pair in the
 trusted orchestrator **before** boot, associate its public key with the durable
@@ -17,10 +20,13 @@ instance UUID, and preload that exact public key on the master. See
 [salt-master.md](salt-master.md). Never accept a pending key just because its
 reported ID or grain matches an instance.
 
-Run as root on the client, after the VPN connects:
+The platform normally invokes `bootstrap.sh` from the selected release checkout.
+For low-level enrollment diagnosis, the equivalent bootstrap command runs as root
+on the client after VPN connectivity, with that checkout as its working directory:
 
 ```sh
-python3 /opt/oduflow/salt/minion/bootstrap.py \
+cd /opt/oduflow/client/releases/REVIEWED_CLIENT_SHA
+python3 salt/minion/bootstrap.py \
   --instance-uuid 12345678-1234-1234-1234-123456789abc \
   --master 100.64.0.10 \
   --master-fingerprint '<SHA256 fingerprint supplied by trusted control plane>' \
@@ -67,10 +73,12 @@ An existing filesystem must match `storage.filesystem_uuid` or the root-only
 receipt `/etc/oduflow/storage.json`. A blank volume fails safely by default.
 Only after independently confirming that a volume is newly created, disposable,
 and belongs to this instance may the operator set boolean `allow_format: true`.
-The current Odoo pillar endpoint does not expose this option: automatic creation
-and attachment stop before authorizing formatting. In an isolated commissioning
-test, supply the reviewed optional values through a trusted pillar override.
-Never overwrite Odoo instance identity while doing so.
+The control plane maps encrypted `storage_allow_format` and
+`storage_filesystem_uuid` into these pillar fields. The Vultr adapter authorizes
+formatting only after verifying the recorded creation receipt, exact owned volume
+and attachment; an explicitly supplied filesystem UUID prevents that default.
+The client still checks the actual device and ownership receipt before formatting.
+Do not use a pillar override to bypass a failed ownership check.
 
 Preparation waits at most 120 seconds for the by-id device (configurable helper
 limit: 600), rejects partitions, child devices, readonly/removable disks, mounted
@@ -84,31 +92,42 @@ A missing/replaced volume with an existing receipt cannot be reformatted.
 The filesystem mounts persistently with `prjquota`; verification checks the actual
 mounted device, XFS type, project quota and writable options. Expected service
 units `oduflow.service` and `paseo.service` receive `RequiresMountsFor`, `BindsTo`
-and `ExecStartPre` checks. Future installation states must use these exact unit
+and `ExecStartPre` checks. Application installation states must use these exact unit
 names and depend on the guard files/systemd reload before `service.running`.
 The guards stop the services when systemd deactivates the mount and reject
 startup on an incorrect mount. They do not assert daemon health or configure
-XFS project IDs/quotas. No service is installed or started by this increment.
+XFS project IDs/quotas. These storage guards do not install or start the application services themselves.
 
 Preparation is serialized locally by an advisory lock. This prevents competing
 runs of this helper; disk hotplug and unrelated root processes remain an external
 coordination responsibility. Keep provider attachment stable throughout highstate.
 
-## Deferred image preparation and cleanup
+## Online storage growth
 
-The following helpers are retained for later provider packaging and are not
-part of the current debugging workflow.
+An administrator supplies an explicit larger target size. The control plane
+reconciles the provider resize before Salt grows the existing owned XFS mount.
+The original plan snapshot remains unchanged; verified current capacity is stored
+separately.
+
+This path does not shrink, format, detach the disk or stop client services. It
+retains the same volume and filesystem ownership checks. An unknown resize result
+requires reconciliation before another request; no paid increase is inferred
+without an explicit target.
+
+## Image preparation and cleanup
+
+The [client Packer recipe](golden-image.md) reuses these helpers on a disposable
+builder. They are not a cleanup procedure for an existing customer VM.
 
 `roles.client_image` installs only the storage/bootstrap prerequisites and the
 exact `versions.salt` package pin from an already configured signed repository;
-it disables/stops `salt-minion`. It is a foundation for a later Packer image, not
-a complete image build. The complete image must also supply the VPN client and
-cloud-init before final cleanup.
+it disables/stops `salt-minion`. This state is one stage of the image build.
+The complete recipe also supplies VPN and application packages before final cleanup.
 
 As the last operation on a **disposable, never-enrolled image builder**:
 
 ```sh
-python3 salt/minion/clean-image.py --confirm-disposable-image
+python3 client/salt/minion/clean-image.py --confirm-disposable-image
 ```
 
 This refuses instances with enrollment/storage receipts, stops Salt/Tailscale,
@@ -122,14 +141,15 @@ VM containing application data or credentials into a golden image.
 No disk, mount, service or cloud changes occur during these checks:
 
 ```sh
-python3 -m unittest discover -s client/tests -p test_salt_minion.py -v
-# Requires Salt 3006.25 and its Python rendering dependencies in the environment:
-python3 client/scripts/validate-salt-minion.py
+cd client
+# Install requirements-test.txt before running these checks.
+python3 -m unittest discover -s tests -p test_salt_minion.py -v
+python3 scripts/validate-salt-minion.py
 ```
 
 The unit tests use fake command responses and temporary files to exercise storage
 refusals, ownership recovery, repeat formatting, mount guards and schema rendering.
-The second check uses real Salt 3006.25 Jinja/YAML rendering and low-state compilation
+The second check uses the release-pinned Salt Jinja/YAML rendering and low-state compilation
 and compares the fingerprint algorithm with Salt. A disposable Ubuntu VM with a
 new block volume is still needed to validate udev identifiers, actual XFS project
 quotas, systemd behavior, network enrollment, reboots and volume attachment races.

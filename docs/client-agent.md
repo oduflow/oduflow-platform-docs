@@ -1,13 +1,16 @@
-# Optional Paseo coding agent
+# Client IDE coding agent
+
+The IDE implementation retains the technical `paseo` identifiers; see
+[terminology](glossary.md#names-and-compatibility).
 
 `client_agent` installs the official OpenCode **1.14.46** Linux x64 baseline
 binary, verified against the npm publisher's SHA512 integrity value. This
-matches the `@opencode-ai/sdk` version the pinned Paseo source declares in its
-server package. Paseo's native OpenCode provider discovers `/usr/local/bin/opencode`
+matches the `@opencode-ai/sdk` version the pinned IDE source declares in its
+server package. IDE's native OpenCode provider discovers `/usr/local/bin/opencode`
 through its existing service PATH. The baseline build avoids an AVX2 requirement.
 
 The state is included by `client_apps.start`. With no `paseo.llm` pillar it is a
-no-op. A present but incomplete LLM configuration fails and prevents Paseo from
+no-op. A present but incomplete LLM configuration fails and prevents IDE from
 starting with that configuration. No provider name or model alias is inferred.
 
 Required optional pillar bundle:
@@ -32,7 +35,7 @@ HTTP is allowed only to literal IPv4 addresses in `100.64.0.0/10`, with traffic
 encrypted by WireGuard. HTTPS remains available for other endpoints.
 
 `default_model` selects an exact alias from the allowed `models` list for both
-coding and auxiliary tasks. The demo selects `gpt-5.6-sol` with `medium` reasoning.
+coding and auxiliary tasks. The example selects `gpt-5.6-sol` with `medium` reasoning.
 The selected model is marked as reasoning-capable and its OpenCode model options
 include `reasoningEffort: medium`. Model options override OpenCode's auxiliary
 reasoning defaults as well. Other allowed aliases remain selectable without
@@ -56,10 +59,10 @@ support remains the responsibility of the configured LiteLLM alias.
 The selected aliases must support the coding agent's tool calls; transport
 compatibility alone does not establish model capability.
 
-The virtual key is written to the mounted Paseo home at
+The virtual key is written to the mounted IDE home at
 `.config/opencode/litellm.key`, owned by `paseo`, mode `0600`. The config uses a
 `{file:...}` reference, disables automatic upgrades and conversation sharing,
-and enables only the configured provider. Config and key changes restart Paseo
+and enables only the configured provider. Config and key changes restart IDE
 on the next controlled Salt apply. Model restrictions and budgets are enforced
 by the LiteLLM virtual key, not by a user-editable OpenCode configuration.
 
@@ -74,9 +77,12 @@ an unfinished or unknown previous attempt cannot be bypassed with this action.
 
 ## Validation
 
+Run client commands from the **client repository root**, with its pinned test
+dependencies installed.
+
 `python3 -m unittest discover -s tests -p test_client_agent.py` checks absence,
 malformed/partial secrets, configuration injection, allowed models, private
-permissions, mount prerequisites and Paseo service ordering. Existing client-app
+permissions, mount prerequisites and IDE service ordering. Existing client-app
 contracts are checked independently. Agent tests also cover explicit default
 selection, reasoning, Responses transport, and invalid selection rejection.
 A fixture using the exact bundled OpenAI SDK version verified that a custom
@@ -109,25 +115,25 @@ live LiteLLM and coding-session validation remain separate checks.
   and [OpenAI SDK 3.0.53 package](https://registry.npmjs.org/@ai-sdk%2fopenai/3.0.53)
   identify the exact adapter used by the installed OpenCode release.
 
-## Paseo provider defaults
+## IDE provider defaults
 
-Client Paseo configuration enables only OpenCode. Claude, Codex, Copilot, Pi,
+Client IDE configuration enables only OpenCode. Claude, Codex, Copilot, Pi,
 and Oh My Pi are disabled through `agents.providers.<id>.enabled`; installing
 another executable does not enable its provider. The model picker is separate:
 OpenCode receives the client's verified LiteLLM model allowlist and default
-model, so enabling OpenCode does not expose every model known to Paseo.
+model, so enabling OpenCode does not expose every model known to IDE.
 
 ## Client Oduflow MCP
 
 OpenCode's global configuration connects to the client's HTTPS `/mcp` endpoint.
 Its Authorization header references `{env:ODUFLOW_MCP_TOKEN}`; the JSON contains
-no token. Salt supplies the client's existing team token through Paseo's
+no token. Salt supplies the client's existing team token through IDE's
 root-owned, mode-0600 `/etc/paseo/credentials.env`. This grants agents management
 access to all environments within that client's Oduflow team. It does not grant
 access to the platform control plane.
 
 Credential rotation updates this environment variable together with Oduflow's
-authentication token and the Paseo password. Paseo and newly launched agent
+authentication token and the IDE password. IDE and newly launched agent
 processes must load the new environment; editing the file alone does not update
 an already-running process. The MCP config lives outside client repositories.
 
@@ -138,15 +144,15 @@ Codex 0.154.0 and Claude Code 2.1.270 Linux amd64 native binaries with SHA-512
 verification. This credential-free stage also runs during the next client image
 build. Updating Salt alone does not rebuild an existing published image.
 
-`client_agent.mcp` configures the Paseo user's `~/.codex/config.toml` and
+`client_agent.mcp` configures the IDE user's `~/.codex/config.toml` and
 `~/.claude.json` during provisioning, preserving unrelated settings and MCP
 servers. Both connect to `https://<client-oduflow-host>/mcp` and resolve
-`ODUFLOW_MCP_TOKEN` from the Paseo service environment. Tokens are not written to
+`ODUFLOW_MCP_TOKEN` from the IDE service environment. Tokens are not written to
 these files. Codex uses `bearer_token_env_var`; Claude uses `${ODUFLOW_MCP_TOKEN}`
 in its HTTP authorization header. Existing running agent sessions must be
 recreated to pick up configuration changes. Direct SSH sessions do not inherit
-the Paseo service environment automatically.
+the IDE service environment automatically.
 
-These CLIs remain disabled in Paseo by default; only OpenCode is enabled.
+These CLIs remain disabled in IDE by default; only OpenCode is enabled.
 Authentication to OpenAI or Anthropic for model inference is separate from
 client Oduflow MCP authentication and is not provisioned by these states.

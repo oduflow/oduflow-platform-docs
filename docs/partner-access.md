@@ -51,7 +51,7 @@ in the partner workspace (`/my/partner`) and the administrator's partner form.
 It downloads `oduflow-platform-access.zip`, containing the private key, a scoped
 SSH config, pinned GitHub host keys and a README with clone/checkout commands.
 Extract the included directory into `~/.ssh/` and follow the README. No shared
-GitHub token is included. Paseo or Client access failures do not block downloading
+GitHub token is included. IDE or Client repository-grant failures do not block downloading
 an already-active platform key. The full three-repository archive remains
 available when all grants are active.
 

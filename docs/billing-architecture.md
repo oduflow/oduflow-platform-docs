@@ -1,7 +1,8 @@
 # Oduflow billing and managed LiteLLM architecture
 
 Status: implementation architecture. All five addons are present in this repository.
-See addon READMEs and `litellm-managed.md` for current setup and runtime limits;
+See [billing setup](billing-operations.md) and [managed LiteLLM](litellm-managed.md)
+for current setup and runtime limits;
 installation and unit/integration tests do not prove a live gateway or payment trial.
 
 ## Design decisions
@@ -307,6 +308,10 @@ customer prices and operational cost.
 
 ## Migration, delivery and verification
 
+The sequence below records the implementation stages. The core, gateway,
+subscription and payment adapters are present; multi-node rollout remains future
+work. For an installation procedure, follow [billing setup](billing-operations.md).
+
 1. Introduce gateway/configuration/key models and the Salt role. Import the
    existing endpoint as a legacy gateway while preserving encrypted keys,
    operation hashes, model names, ownership and immutable provisioning snapshots.
@@ -331,15 +336,16 @@ installation must not retroactively charge them. Tests must cover aggregate
 replay/reordering, lost ack, source restore/gaps, tariff splits, key transfer,
 proxy-chain duplicates, token semantics, final drain, unavailable-source closure,
 concurrent renewals, tiny amounts, taxes/credit notes, refunds, access isolation
-and blocked-key deletion. Run Odoo tests via Megaflow and relevant local Salt
+and blocked-key deletion. Run Odoo tests via the target Oduflow MCP and relevant local Salt
 and Ruff checks. Report source, deployed and live verified states separately.
 
 The current fleet supports independent gateways with one node each; replica
 rollout, provider fallback, audio/image billing and automated strict retail credit
 reservations are future work. Positive inference enforcement costs are separate
-from customer selling prices. Production activation requires a built runtime
-image matching the pinned contract, gateway/backend configuration, and a real
-streaming/metering trial. Payment activation requires provider credentials,
+from customer selling prices. Production activation requires a reviewed native release or Docker runtime image
+matching the pinned contract, gateway/backend configuration, and a real
+streaming/metering trial. Runtime and database choices are defined in
+[managed LiteLLM](litellm-managed.md#choose-the-runtime-and-database). Payment activation requires provider credentials,
 customer authorization and configured accounting journals. New installations
 leave subscription renewal and Paddle collection scheduling disabled.
 

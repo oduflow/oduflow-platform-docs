@@ -5,8 +5,9 @@ Client installation sources live in the public repository
 the dependency used by platform builds and tests. Initialize it with
 `git submodule update --init client` in a source checkout without credentials.
 Odoo runtime delivery does not require a populated submodule: cloud-init uses the
-SHA in `addons/oduflow/data/client-release.json`, and master bundle creation can
-fetch the pinned Git object over public HTTPS.
+SHA frozen for the instance, and master bundle creation can fetch the pinned Git
+object over public HTTPS. The platform manifest is a compatibility reference and
+fallback for historical adoption, not the default selector for new plans.
 
 ## Boundaries
 
@@ -22,11 +23,13 @@ Infrastructure images and master bundles consume shared installation helpers
 from the pinned client repository. Local infrastructure states may use a merged
 tree, which is separate from the master fileserver's published roots.
 
-## Release and installation
+## Publish the platform client dependency
 
 1. Commit and test the client repository; use a full lowercase commit SHA.
-2. Update the platform submodule and `addons/oduflow/data/client-release.json`
-   together. The latter is the default for new deployment plans.
+2. Push the tested client commit before advancing the platform dependency.
+   Update the submodule and `addons/oduflow/data/client-release.json` to that same
+   full SHA. Keep manifest version/contract consistent with `client/release.json`.
+   New plans select their version as described below.
 3. Client source and IDE release downloads need no GitHub credentials.
 4. Deliver and upgrade `oduflow`. Rebuild the master when its executor or source
    transport changes; ordinary client state changes need only the pinned checkout.
@@ -38,6 +41,21 @@ snapshot. Cloud-init receives that SHA and private enrollment
 inputs; it checks out the client release and runs that release's `bootstrap.sh`.
 Client secrets and machine identity remain separate from the checkout. Prepared
 historical snapshots are not rewritten during migration.
+
+## Selecting the version for a new client
+
+The plan's **Client Version** defaults to `main`. During preparation the control
+plane resolves `oduflow/oduflow-client`'s main branch through the configured
+GitHub API credential and saves the full SHA in the instance and immutable
+provisioning snapshot. The same field accepts a full lowercase commit SHA to
+pin a plan. A nonempty **Desired Client Revision** on a draft instance takes
+precedence over the plan. Preparation fails if main cannot be resolved.
+
+Already prepared instances never follow moving branches automatically. Their
+queued configuration and update operations continue to use an immutable SHA.
+`addons/oduflow/data/client-release.json` and the client submodule remain the
+platform's bundled compatibility reference and fallback for historical release
+adoption; they no longer choose the version for a newly prepared unpinned client.
 
 ## Update an existing client
 
@@ -82,21 +100,5 @@ Legacy client HTTPS tokens are replaced by a verified deploy key for the client'
 repository before Salt receives the new pillar. Salt removes the managed token file
 and GitHub entries from the team credential store while preserving other hosts.
 
-Public `oduflow/paseo` and `oduflow/oduflow-client` repositories do not receive
-customer deploy keys. Additional private repositories can still use scoped
-read-only grants. The client's own project repository retains scoped write access.
-
-## Selecting the version for a new client
-
-The plan's **Client Version** defaults to `main`. During preparation the control
-plane resolves `oduflow/oduflow-client`'s main branch through the configured
-GitHub API credential and saves the full SHA in the instance and immutable
-provisioning snapshot. The same field accepts a full lowercase commit SHA to
-pin a plan. A nonempty **Desired Client Revision** on a draft instance takes
-precedence over the plan. Preparation fails if main cannot be resolved.
-
-Already prepared instances never follow moving branches automatically. Their
-queued configuration and update operations continue to use an immutable SHA.
-`addons/oduflow/data/client-release.json` and the client submodule remain the
-platform's bundled compatibility reference and fallback for historical release
-adoption; they no longer choose the version for a newly prepared unpinned client.
+See [repository access](github-download-access.md) for public software downloads,
+customer project grants and legacy credential migration.

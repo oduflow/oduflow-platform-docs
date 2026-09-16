@@ -4,6 +4,9 @@
 public [oduflow-platform-docs repository](https://github.com/oduflow/oduflow-platform-docs).
 The platform application's repository remains private.
 
+For content ownership, review rules and translation checks, see
+[documentation maintenance](documentation-maintenance.md).
+
 ## Publish an update
 
 In the platform checkout, update the guides in `docs/` and add new pages to
@@ -52,7 +55,8 @@ Open `http://127.0.0.1:8000`. For a strict build:
 .venv/bin/python -m mkdocs build --strict
 ```
 
-The generated `site/` directory is ignored by Git.
+The generated `site/` directory is ignored by Git. A strict build checks navigation
+and internal links; it does not publish the site or verify deployed applications.
 
 ## Hosting
 
