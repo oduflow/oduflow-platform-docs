@@ -77,7 +77,7 @@ an unfinished or unknown previous attempt cannot be bypassed with this action.
 
 ## Validation
 
-Run client commands from the **client repository root**, with its pinned test
+Run client commands from the **`client/` directory**, with its pinned test
 dependencies installed.
 
 `python3 -m unittest discover -s tests -p test_client_agent.py` checks absence,

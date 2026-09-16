@@ -59,7 +59,7 @@ packer validate packer/litellm.pkr.hcl
 packer build -var "source_revision=$(git rev-parse HEAD)" packer/litellm.pkr.hcl
 ```
 
-Packer creates a disposable VM, uploads the platform and pinned client Salt sources, installs dependencies and
+Packer creates a disposable VM, uploads the platform and client Salt sources from that same commit, installs dependencies and
 runs cleanup. It then creates a private snapshot on the account owning the API
 key and removes the builder VM and temporary SSH-key record on successful
 completion. Each manifest records the snapshot ID and source revision.

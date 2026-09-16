@@ -37,7 +37,7 @@ ODUFLOW_PILLAR_TOKEN=<external pillar bearer token>
 ODUFLOW_SALT_API_PASSWORD=<Salt API password>
 ```
 
-New clients use scoped SSH project keys and public software downloads; see
+New clients use scoped SSH project keys and Master-delivered software artifacts; see
 [repository access](github-download-access.md). `ODUFLOW_GITHUB_CLIENT_TOKEN` is
 only a legacy explicit HTTPS option and is unnecessary when the client already
 has its verified encrypted Git credential bundle. LiteLLM and provider credentials are

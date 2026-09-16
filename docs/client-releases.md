@@ -1,61 +1,44 @@
-# Client software releases
+# Client releases
 
-Client installation sources live in the public repository
-`https://github.com/oduflow/oduflow-client.git`. The `client` Git submodule pins
-the dependency used by platform builds and tests. Initialize it with
-`git submodule update --init client` in a source checkout without credentials.
-Odoo runtime delivery does not require a populated submodule: cloud-init uses the
-SHA frozen for the instance, and master bundle creation can fetch the pinned Git
-object over public HTTPS. The platform manifest is a compatibility reference and
-fallback for historical adoption, not the default selector for new plans.
-
-## Boundaries
-
-The client repository owns client Salt states, bootstrap/minion, application
-artifacts, Packer client recipes and client tests. The platform retains Odoo
-addons, provider operations, master orchestration and infrastructure states.
-The master fileserver publishes only `/srv/oduflow/client/salt/` roots. It does
-not publish platform states, even under a separate named Salt environment.
-Gateway operations receive a bounded, digest-bound source bundle addressed to
-the expected enrolled minion through the authenticated Salt job transport.
-
-Infrastructure images and master bundles consume shared installation helpers
-from the pinned client repository. Local infrastructure states may use a merged
-tree, which is separate from the master fileserver's published roots.
-
-## Publish the platform client dependency
-
-1. Commit and test the client repository; use a full lowercase commit SHA.
-2. Push the tested client commit before advancing the platform dependency.
-   Update the submodule and `addons/oduflow/data/client-release.json` to that same
-   full SHA. Keep manifest version/contract consistent with `client/release.json`.
-   New plans select their version as described below.
-3. Client source and IDE release downloads need no GitHub credentials.
-4. Deliver and upgrade `oduflow`. Rebuild the master when its executor or source
-   transport changes; ordinary client state changes need only the pinned checkout.
-   Container CI checks out the exact public client submodule SHA over HTTPS.
-5. Test one client before selecting the new SHA on additional clients.
-
-Preparing an instance freezes the initial client SHA in its provisioning
-snapshot. Cloud-init receives that SHA and private enrollment
-inputs; it checks out the client release and runs that release's `bootstrap.sh`.
-Client secrets and machine identity remain separate from the checkout. Prepared
-historical snapshots are not rewritten during migration.
+Client VM software lives under `client/` in the platform repository. There is no
+separate client repository dependency; `client/` is an ordinary directory. Run
+client checks from that directory; platform and client changes ship in one commit.
 
 ## Selecting the version for a new client
 
-The plan's **Client Version** defaults to `main`. During preparation the control
-plane resolves `oduflow/oduflow-client`'s main branch through the configured
-GitHub API credential and saves the full SHA in the instance and immutable
-provisioning snapshot. The same field accepts a full lowercase commit SHA to
-pin a plan. A nonempty **Desired Client Revision** on a draft instance takes
-precedence over the plan. Preparation fails if main cannot be resolved.
+A plan defaults to main. Preparation resolves the platform main branch to a full
+commit SHA, or uses the explicit SHA selected on the plan/instance. That SHA is
+frozen in the provisioning snapshot and each configuration operation. The bundled
+client-release manifest references a platform commit containing its client tree.
 
-Already prepared instances never follow moving branches automatically. Their
-queued configuration and update operations continue to use an immutable SHA.
-`addons/oduflow/data/client-release.json` and the client submodule remain the
-platform's bundled compatibility reference and fallback for historical release
-adoption; they no longer choose the version for a newly prepared unpinned client.
+## Delivery through Master
+
+Control requests preparation through Salt API's restricted runner. Master reads
+the selected private platform archive in temporary storage and exports only its
+client subtree. The immutable client archive is addressed by commit and checked
+by SHA256. Platform addons and credentials are not published through file_roots.
+Cloud-init contains only enrollment scripts and private enrollment inputs; after
+joining Salt, the client receives its release over the authenticated fileserver.
+
+Minions extract into `/opt/oduflow/client/releases/<SHA>` and reject modified local
+releases. Salt applies those local states with fresh in-memory pillar. IDE runtime
+archives are fetched from Master before switching to local state rendering.
+
+## IDE releases
+
+See [IDE installation](ide-installation.md). Build and source repository access
+belongs to infrastructure. Clients retain separate credentials for their own
+private project repositories.
+
+## Publish a client change
+
+1. Change and test `client/` together with any affected platform code.
+2. Commit and push the platform changes. Select that full platform SHA for the
+   client release; there is no separate client commit or gitlink to advance.
+3. Deliver the control/master changes required by that release before applying
+   it to a client. Keep the bundled release manifest consistent with the selected
+   platform commit and its `client/release.json` compatibility metadata.
+4. Apply and verify one client before selecting the SHA for additional clients.
 
 ## Update an existing client
 
@@ -65,20 +48,20 @@ and durable dispatch protocol apply. Selection is blocked while an operation
 is running or uncertain. A request binds its SHA before publication; a missing
 response is reconciled against that exact receipt, never retried as a new apply.
 
-Release-aware clients keep clean detached checkouts under
+Release-aware clients keep verified extracted releases under
 `/opt/oduflow/client/releases/<SHA>`. Every managed client role uses local states
-from the selected release. Fresh authenticated pillar stays in memory. Dirty
-checkouts are rejected rather than overwritten. Application health checks are
+from the selected release. Fresh authenticated pillar stays in memory. Modified
+release trees are rejected rather than overwritten. Application health checks are
 part of successful configuration; only a reconciled success records
 **Applied Client Revision**, **Verified Client Revision** and its timestamp.
 These fields certify application configuration, not public production readiness.
 
-Client release checkout uses public HTTPS with no repository credentials in
-pillar, cloud-init, or images. `salt-call oduflow_job.version` returns reduced
-local metadata without secrets.
+Master delivers the client archive over authenticated Salt transport. Platform
+Git credentials never enter client pillar, cloud-init or images.
+`salt-call oduflow_job.version` returns reduced local metadata without secrets.
 
-Version 1 receipts remain readable. Version 2 binds a client SHA; version 3 binds
-an addressed infrastructure bundle digest. The master refuses to dispatch these
+Version 1 receipts remain readable. Version 2 binds the selected platform SHA;
+version 3 binds an addressed infrastructure bundle digest. The master refuses to dispatch these
 jobs to minions that do not advertise the matching protocol.
 
 Changing a SHA is not a transactional OS/database rollback. A failed apply can
@@ -88,17 +71,7 @@ not snapshotted by a source commit. Golden images remain optional accelerators.
 
 ## Checks
 
-Run platform Ruff and local tests, the client repository's own checks, and
-relevant Odoo tests through the target Oduflow MCP. A source or mocked test result
-does not certify live provisioning. Keep deployment reports explicit about
-source revisions, image digests, module upgrades, queued operations and limits.
-
-Client releases never include platform repository access. The old platform download
-default is removed on upgrade. Existing installation snapshots remain immutable;
-queued configuration reconciles and revokes recorded read-only platform deploy keys.
-Legacy client HTTPS tokens are replaced by a verified deploy key for the client's own
-repository before Salt receives the new pillar. Salt removes the managed token file
-and GitHub entries from the team credential store while preserving other hosts.
-
-See [repository access](github-download-access.md) for public software downloads,
-customer project grants and legacy credential migration.
+Run client checks from `client/`, platform checks from the repository root, and
+relevant Odoo tests through the target Oduflow MCP. Record selected, applied and
+verified revisions separately. See [repository access](github-download-access.md)
+for customer project keys and [IDE installation](ide-installation.md) for artifacts.

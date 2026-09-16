@@ -11,7 +11,7 @@
 | Shared control IDE | An administrative workspace with client repository working copies. It is a separate service and does not expose client VM files. |
 | Paseo | The upstream/fork and retained technical identifiers, including `paseo.service`, the `paseo` user, Salt keys and repository name. |
 | Slug | The naming identifier used for the client repository and DNS subtree; distinct from its permanent instance UUID. |
-| Client release | An immutable Git SHA of `oduflow/oduflow-client`, with compatibility metadata in that release's `release.json`. |
+| Client release | A platform Git SHA selecting its `client/` tree, with compatibility metadata in `client/release.json`. |
 | Provisioning snapshot | Frozen initial plan, names, resource choices and policies. Later settings and configuration revisions do not rewrite it. |
 | Configuration revision | A frozen request to apply settings, bound to its own encrypted credentials and execution identity. |
 | Dispatch receipt | Durable evidence binding an external request to its exact target and inputs; used to reconcile a lost response. |
@@ -33,10 +33,10 @@ names, environment variables, pillar keys and historical evidence containing
 ## Source and runtime paths
 
 Paths in platform guides are relative to the platform repository unless a section
-states otherwise. Client source lives in the `client/` submodule. Commands executed
+states otherwise. Client source lives in the `client/` directory of the same repository. Commands executed
 on a VM use the selected release under `/opt/oduflow/client/releases/<SHA>`;
-instructions must say when the working directory changes. Initialize the submodule
-before local checks; see [client releases](client-releases.md).
+instructions must say when the working directory changes. Run client checks from
+`client/`; see [client releases](client-releases.md).
 
 Package pins belong to the selected release's `salt/states/client_apps/artifacts.json`.
 An installed version, a tested historical version and a platform dependency pin

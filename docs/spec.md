@@ -100,7 +100,7 @@ redacts secrets and does not prove that a client applied those values.
 [Control settings](control-settings.md) define platform configuration.
 [Customer settings](customer-configuration.md) describe editable preferences and
 frozen application revisions. [Repository access](github-download-access.md)
-separates public software downloads, customer project keys and partner access.
+separates Master-delivered software artifacts, customer project keys and partner access.
 
 ## Continuing operations
 

@@ -42,7 +42,6 @@ in the deployment report.
 Build from the repository root, using the exact reviewed commit:
 
 ```sh
-git submodule update --init client
 docker build -f docker/master/Dockerfile -t oduflow-master:test .
 docker build -f docker/litellm/Dockerfile -t oduflow-litellm:test .
 docker build -f docker/vpn/Dockerfile -t oduflow-vpn:test .

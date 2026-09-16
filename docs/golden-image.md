@@ -38,11 +38,11 @@ Packer variable files.
 mkdir -p client/packer/output
 packer init client/packer/client.pkr.hcl
 packer validate client/packer/client.pkr.hcl
-packer build -var source_revision=REVIEWED_CLIENT_COMMIT client/packer/client.pkr.hcl
+packer build -var source_revision=REVIEWED_PLATFORM_COMMIT client/packer/client.pkr.hcl
 ```
 
 Use an isolated checkout of a reviewed commit for the build. The builder uploads
-only the repository's `salt` tree and removes that temporary copy afterward.
+only the platform repository's `client/salt` tree and removes that temporary copy afterward.
 Final cleanup invokes the existing `client/salt/minion/clean-image.py` refusal checks,
 removes Salt and Tailscale identities, cloud-init instance data, SSH host keys,
 temporary authorized keys, machine ID and swap; it locks the temporary root

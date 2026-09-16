@@ -20,18 +20,18 @@ instance UUID, and preload that exact public key on the master. See
 [salt-master.md](salt-master.md). Never accept a pending key just because its
 reported ID or grain matches an instance.
 
-The platform normally invokes `bootstrap.sh` from the selected release checkout.
-For low-level enrollment diagnosis, the equivalent bootstrap command runs as root
-on the client after VPN connectivity, with that checkout as its working directory:
+Cloud-init receives only the selected enrollment scripts and private enrollment
+inputs under `/run/oduflow-bootstrap`; it does not clone a repository or require
+the client release before enrollment. For low-level diagnosis, while those
+transient files still exist, run the equivalent command as root after VPN connectivity:
 
 ```sh
-cd /opt/oduflow/client/releases/REVIEWED_CLIENT_SHA
-python3 salt/minion/bootstrap.py \
+python3 /run/oduflow-bootstrap/bootstrap.py \
   --instance-uuid 12345678-1234-1234-1234-123456789abc \
   --master 100.64.0.10 \
   --master-fingerprint '<SHA256 fingerprint supplied by trusted control plane>' \
-  --private-key /run/oduflow/minion.pem \
-  --public-key /run/oduflow/minion.pub
+  --private-key /run/oduflow-bootstrap/minion.pem \
+  --public-key /run/oduflow-bootstrap/minion.pub
 ```
 
 The script verifies the key pair and Salt major version, installs root-only
@@ -53,8 +53,9 @@ secrets cannot exist in process memory or other system logs.
 ## Storage handoff and states
 
 Use the [client release workflow](client-releases.md) to apply `roles.client_stack`
-from the selected client checkout only to the exact UUID minion. The master
-publishes only its pinned client dependency, never platform states. Schema 1 must contain `instance_uuid` and:
+from the selected extracted client release only to the exact UUID minion. Master
+exports only the selected platform commit's client subtree, never platform addons
+or credentials. Schema 1 must contain `instance_uuid` and:
 
 ```yaml
 storage:

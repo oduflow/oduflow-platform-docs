@@ -13,7 +13,7 @@ verify its result and recover from the relevant failure.
 | `addons/<module>/README.md` | Module setup, dependencies and module-specific limits | Link to shared platform procedures |
 | `addons/<module>/doc/` | Installed Odubook guides and daily changes | Keep configured translations synchronized |
 | Standalone Manuals | Uploaded documents, including the integrator guide | Update the existing language file; `noupdate` seeds preserve administrator edits |
-| `client/README.md` | Client repository installation, maintenance and checks | Follow the client repository's contribution rules |
+| `client/README.md` | Client software installation, maintenance and checks | Follow `client/AGENTS.md` within the platform repository |
 | `docs/decisions/` | Architectural rationale and historical design boundaries | State accepted/superseded scope and link to the current contract |
 | `reports/deployments/` | Dated evidence for a named target and revision | Preserve historical facts; do not turn a past check into a current guarantee |
 

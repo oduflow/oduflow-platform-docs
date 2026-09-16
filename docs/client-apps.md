@@ -1,7 +1,7 @@
 # Client application installation
 
-Client software belongs to `oduflow-client`, mounted at `client/` in the platform
-checkout. This guide describes its Salt states; use the control-plane
+Client software lives in `client/` in the platform repository and shares its
+commit history. This guide describes its Salt states; use the control-plane
 [release workflow](client-releases.md) to apply them to an enrolled client.
 Package versions, URLs, checksums and the IDE source commit are declared in the
 selected release's `salt/states/client_apps/artifacts.json`.
@@ -27,8 +27,8 @@ artifacts. The installer copies its version manifest to
 `/var/cache/oduflow-apps/artifacts.json`; prose version numbers do not override it.
 
 The client release includes a checksum-pinned IDE source archive under
-`salt/states/client_apps/artifacts/`. Installation needs no GitHub credential for
-this archive or the public `oduflow/paseo` repository. Customer project access is
+`salt/states/client_apps/artifacts/`. Master delivers this source archive as part of the
+selected client tree. Client VMs need no platform or IDE GitHub credential. Customer project access is
 separate; see [repository access](github-download-access.md).
 
 The source build verifies the archive, embedded commit, version and extraction
@@ -49,7 +49,7 @@ upstream version string. Missing executables trigger installation again.
 The source lockfile pins build dependencies; runtime tarball/wheel dependencies
 and signed Ubuntu repositories are not all frozen by the client Git SHA.
 
-For maintainers, run this from the **client repository root** to prepare a new
+For maintainers, run this from the **`client/` directory** to prepare a new
 source archive, then review and commit the matching manifest and artifact:
 
 ```sh
@@ -127,7 +127,7 @@ the client manifest does not digest-pin every image selected by Oduflow itself.
 
 ## Verification
 
-From the **client repository root**, install `requirements-test.txt` and run the
+From the **`client/` directory**, install `requirements-test.txt` and run the
 relevant `test_client_apps.py` suite with Salt's rendering dependencies. Verify
 candidate TOML using the Oduflow version pinned by that same release.
 

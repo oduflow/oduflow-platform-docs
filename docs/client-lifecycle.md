@@ -49,8 +49,8 @@ Billing cancellation and infrastructure deletion are separate operations; this
 release does not introduce automatic deletion or payment-delinquency suspension.
 Concurrent billing activation and expiry serialize on the instance row.
 
-Deliver the client commit first, then pin it in the platform's client-release
-manifest and upgrade `oduflow,oduflow_billing,oduflow_litellm,oduflow_portal`.
+Commit platform and client changes together, select the platform SHA in the
+client-release manifest, and upgrade `oduflow,oduflow_billing,oduflow_litellm,oduflow_portal`.
 Client job transport must already support immutable client revisions. No new master
 runner, minion profile, Packer image or provider resource is required.
 

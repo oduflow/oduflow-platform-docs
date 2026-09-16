@@ -54,7 +54,7 @@ message, a completed queue wrapper or a process merely being present.
 
 ## Apply a correction to the existing VM
 
-Deliver the reviewed client commit, select its full SHA and use
+Deliver the reviewed platform commit containing the client changes, select its full SHA and use
 **Apply Updated Configuration**. For customer settings, use **Save & Apply**.
 These operations bind the revision and inputs to the durable request. Editing
 the master's checkout alone does not update a release-aware client.

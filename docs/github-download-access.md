@@ -5,8 +5,8 @@ have different owners and credentials:
 
 | Repository | Client access |
 | --- | --- |
-| `oduflow/oduflow-client` | Public HTTPS checkout at the selected immutable SHA; no deploy key |
-| `oduflow/paseo` | Public IDE source/releases; no customer deploy key |
+| Platform `client/` tree | Archive of the selected platform SHA, delivered by Master over authenticated Salt transport |
+| IDE source and runtime archives | Included source or verified runtime artifacts delivered by Master; infrastructure owns repository credentials |
 | The client's own project repository | A verified, instance-owned SSH deploy key with write access |
 | Additional configured private repositories | Separate scoped read-only SSH deploy keys |
 | `oduflow/oduflow-platform` | Not distributed to client VMs; [partner source access](partner-access.md#downloading-platform-source-access) is a separate workflow |
@@ -15,7 +15,8 @@ have different owners and credentials:
 
 **Settings → Oduflow → Client Download Repositories** accepts one GitHub
 `owner/repository` per line. New plans snapshot the configured list. The platform
-repository is rejected; the public client and IDE repositories do not need grants.
+repository is rejected; platform/client software and IDE artifacts use the separate
+Master delivery path and need no client repository grants.
 Changing the list does not silently rewrite an existing provisioning snapshot.
 
 GitHub requires a distinct deploy key for each repository. Additional read-only
@@ -44,8 +45,8 @@ key does not grant that capability.
 ## Legacy clients and revocation
 
 Existing provisioning snapshots remain immutable. During queued configuration,
-the platform reconciles and revokes recorded client grants for the platform and
-public software repositories. A legacy HTTPS project token is replaced only after
+the platform reconciles and revokes obsolete client grants for platform and
+software-source repositories. A legacy HTTPS project token is replaced only after
 a write key for the exact client repository is verified. Salt removes managed
 token files and the corresponding GitHub credential-store entries, preserving
 other hosts. Removing a stored token does not revoke that token at GitHub.
